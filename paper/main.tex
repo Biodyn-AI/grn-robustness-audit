@@ -593,9 +593,14 @@ None declared.
 % ============================================================
 \section*{Data and Code Availability}
 
-All source code, analysis pipelines, result tables, and figure-generation scripts
-are publicly available at
-\url{https://github.com/Biodyn-AI/grn-robustness-audit}.
+All source code, result data, and figure-generation scripts are publicly
+available at \url{https://github.com/Biodyn-AI/grn-robustness-audit}.
+The repository is self-contained: running \texttt{make all} regenerates all
+figure panels from the included CSV result files, composes the six composite
+PDF figures, and compiles this manuscript. Per-axis result CSVs are provided
+in \texttt{data/} and individual figure panels in \texttt{source\_panels/};
+see the repository README for a full data dictionary and step-by-step
+reproduction instructions.
 Raw single-cell data are from the Tabula Sapiens Consortium and are available at
 \url{https://tabula-sapiens-portal.ds.czbiohub.org/}.
 
