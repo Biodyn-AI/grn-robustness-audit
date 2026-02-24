@@ -1,0 +1,44 @@
+\pdfminorversion=5
+\documentclass[12pt]{letter}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, urlcolor=blue!60!black}
+
+\signature{Ihor Kendiukhov\\
+Independent Researcher\\
+ORCID: 0000-0001-5342-1499\\
+\href{mailto:kenduhov.ig@gmail.com}{kenduhov.ig@gmail.com}}
+
+\date{\today}
+
+\begin{document}
+
+\begin{letter}{Editorial Office\\
+\textit{Bioinformatics}\\
+Oxford University Press}
+
+\opening{Dear Editors,}
+
+I am writing to submit the manuscript entitled \textbf{``Five Axes of Fragility: A Systematic Robustness Audit of Gene-Regulatory-Network Inference from Single-Cell Foundation Models''} for consideration as an Original Paper in \textit{Bioinformatics}.
+
+Gene-regulatory-network inference from single-cell transcriptomics is a rapidly growing area, with foundation-model-derived attention scores offering a scalable alternative to classical methods. However, published benchmarks almost exclusively evaluate accuracy under fixed preprocessing, leaving open the question of whether the same biological conclusions would survive realistic analytical perturbations such as changes in cell count, clustering resolution, donor cohort, or batch-correction method.
+
+This manuscript fills that gap by conducting the first systematic multi-axis robustness audit of GRN edge rankings. We evaluate five axes of fragility---cell-count subsampling, cluster-resolution sensitivity, rare-cell-type reliability, donor generalization, and integration-method sensitivity---across four Tabula Sapiens tissues and one external lung cohort. Each axis was developed through an adversarial-review loop that required corrective experiments before claims were updated, a methodology that is itself a contribution to reproducible computational biology.
+
+Our key findings include: (1) unconstrained rankings require over 3,000 cells for minimal stability; (2) dual-null calibration universally recommends coarse clustering; (3) rare cell types show a systematic reliability deficit; (4) 6--8 donors are needed for immune-tissue generalization; and (5) Harmony batch correction displaces 31--45\% of top-500 edges without perturbation-confirmed biological improvement. Critically, no dataset passes all five axes, and corrective measures along one axis do not resolve others.
+
+The paper provides a practical guidelines table and an open-source audit framework that practitioners can apply before publishing GRN claims. All code and pipelines are publicly available at \url{https://github.com/Biodyn-AI/grn-robustness-audit}.
+
+I believe this work is well suited to \textit{Bioinformatics} because it directly addresses a methodological gap in the computational biology community: the disconnect between benchmark accuracy and practical robustness. The multi-axis audit framework, adversarial-review methodology, and concrete practitioner guidelines represent contributions that will be of immediate value to researchers working with single-cell GRN inference.
+
+This manuscript has not been published elsewhere and is not under consideration at any other journal. I confirm that I have read and agree to the journal's policies.
+
+Thank you for your consideration.
+
+\closing{Sincerely,}
+
+\end{letter}
+\end{document}

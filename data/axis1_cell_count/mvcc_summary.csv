@@ -1,0 +1,10 @@
+policy,tier,primary_top_k,mvcc_mean_cells,mvcc_conservative_cells,mvcc_strict_cells,mvcc_mean_label,mvcc_conservative_label,mvcc_strict_label
+tf_source,large,1000,200.0,200.0,200.0,200.0,200.0,200.0
+tf_source,medium,1000,200.0,200.0,200.0,200.0,200.0,200.0
+tf_source,small,1000,200.0,200.0,200.0,200.0,200.0,200.0
+tf_source_target,large,1000,200.0,200.0,200.0,200.0,200.0,200.0
+tf_source_target,medium,1000,200.0,200.0,200.0,200.0,200.0,200.0
+tf_source_target,small,1000,200.0,200.0,200.0,200.0,200.0,200.0
+unconstrained,large,1000,1130.0310659783418,inf,inf,1130.0,>3000,>3000
+unconstrained,medium,1000,inf,inf,inf,>3000,>3000,>3000
+unconstrained,small,1000,1152.8385417213465,inf,1489.715874850491,1152.8,>3000,1489.7

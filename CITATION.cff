@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite it as below."
+title: "Five Axes of Fragility: A Systematic Robustness Audit of Gene-Regulatory-Network Inference from Single-Cell Foundation Models"
+type: software
+authors:
+  - family-names: Kendiukhov
+    given-names: Ihor
+    orcid: "https://orcid.org/0000-0001-5342-1499"
+    email: kenduhov.ig@gmail.com
+repository-code: "https://github.com/Biodyn-AI/grn-robustness-audit"
+license: MIT
+keywords:
+  - gene regulatory networks
+  - single-cell RNA-seq
+  - robustness audit
+  - reproducibility
+  - foundation models
