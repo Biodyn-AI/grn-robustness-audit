@@ -42,8 +42,8 @@ are made under a single scorer family.\\
 We audit GRN edge rankings across five fragility axes---cell count,
 clustering resolution, rare-cell reliability, donor generalization, and
 integration sensitivity---on four Tabula Sapiens tissues, one
-non-Tabula-Sapiens external lung cohort (Travaglini et al.\ 2020
-SmartSeq2), and one disease cohort (Delorey et al.\ 2021 COVID-19
+non-Tabula-Sapiens external lung cohort \citep[SmartSeq2;][]{Travaglini2020},
+and one disease cohort (Delorey et al.\ 2021 COVID-19
 lung atlas, 116{,}313 cells, 27 donors), using five scorer families:
 Pearson correlation, mutual information, GRNBoost2, GENIE3, and
 scGPT attention.
@@ -99,9 +99,10 @@ gene-dimension and normalization ablations) are available at
 Single-cell RNA-sequencing enables transcriptome-wide inference of
 gene regulatory networks (GRNs). Classical correlation- and tree-based
 scorers (SCENIC~\citep{Aibar2017}, GRNBoost2~\citep{Moerman2019},
-GENIE3~\citep{Huynh-Thu2010}, ARACNe-family methods) and
-attention-derived scores from single-cell foundation models such as
-scGPT~\citep{Cui2024} all rank TF--target edges as regulatory
+GENIE3~\citep{Huynh-Thu2010}, ARACNe-family
+methods~\citep{Margolin2006}) and attention-derived scores from
+single-cell foundation models such as scGPT~\citep{Cui2024} and
+Geneformer~\citep{Theodoris2023} all rank TF--target edges as regulatory
 hypotheses, but confidence in those rankings depends on analytical
 choices that are rarely stress-tested. Published
 benchmarks~\citep{Pratapa2020, Chen2018} evaluate accuracy against
@@ -175,13 +176,13 @@ for practitioners (Section~4).
 
 All analyses used processed single-cell datasets from the Tabula
 Sapiens atlas~\citep{TabulaSapiens2022}, one external lung cohort
-(Travaglini et al.\ 2020 SmartSeq2), and one COVID-19 disease lung
+(\citealt{Travaglini2020} SmartSeq2), and one COVID-19 disease lung
 atlas (Delorey et al.\ 2021~\citep{Delorey2021}; Table~\ref{tab:datasets}).
 Datasets were preprocessed using Scanpy~\citep{Wolf2018} following established
-best practices~\citep{Luecken2019}. The primary normalization was
+best practices~\citep{Luecken2019, Heumos2023}. The primary normalization was
 depth-normalization (``\texttt{normalize\_total}'' with ``\texttt{target\_sum}='' $10^4$)
 followed by \texttt{log1p}, with the top 600 highly-variable genes selected
-using the Seurat v3 flavor. Two alternative normalization schemes---median-ratio
+using the Seurat v3 flavor~\citep{Stuart2019}. Two alternative normalization schemes---median-ratio
 size-factor normalization and Pearson residuals~\citep{Lause2021}---were
 evaluated as an ablation (Supplementary Fig.~S6) and produced the same
 calibrated recommendation on every axis we examined. Every pipeline run
@@ -205,7 +206,7 @@ coarse-versus-fine question is closed under a shared edge universe.
 \begin{table*}[ht]
 \centering
 \caption{Datasets used across the five robustness axes. External lung =
-Travaglini et al.\ 2020 SmartSeq2 cohort (non-Tabula-Sapiens, non-10x
+\citet{Travaglini2020} SmartSeq2 cohort (non-Tabula-Sapiens, non-10x
 technology), used to verify that conclusions survive outside the
 Tabula Sapiens pipeline. Delorey COVID lung = Delorey et al.\ 2021
 COVID-19 lung atlas, providing a disease-state cohort and a
@@ -235,9 +236,10 @@ methodological choice. Five scorers are implemented:
 \begin{itemize}
 \item \textbf{Pearson correlation} on column-standardized expression.
       Sign of correlation is tracked separately from the magnitude score.
-\item \textbf{Mutual information} using scikit-learn's
-      ``\texttt{mutual\_info\_regression}'' (Kraskov $k$-nearest-neighbour
-      estimator, $k=3$, seed fixed).
+\item \textbf{Mutual information} via the \texttt{mutual\_info\_regression}
+      routine in scikit-learn~\citep{Pedregosa2011}, which implements
+      the Kraskov--St\"ogbauer--Grassberger $k$-nearest-neighbour
+      estimator~\citep{Kraskov2004} ($k=3$, seed fixed).
 \item \textbf{GRNBoost2}~\citep{Moerman2019} and
       \textbf{GENIE3}~\citep{Huynh-Thu2010}: per-target gradient-boosted
       and random-forest regression importance respectively (500
@@ -290,8 +292,8 @@ The Minimum Valid Cell Count (MVCC) is the smallest cell count at which
 the mean top-1{,}000 Jaccard exceeds 0.5 against the reference anchor.
 We report MVCC per (dataset, anchor, scorer) triple so that both
 anchor-dependence and scorer-dependence can be read directly from
-the results. Benjamini--Hochberg correction was
-applied to the family of per-(policy, cell-count) $p$-values testing
+the results. Benjamini--Hochberg correction~\citep{BenjaminiHochberg1995}
+was applied to the family of per-(policy, cell-count) $p$-values testing
 whether prior-constrained rankings differ from matched random-gene-set
 controls.
 
@@ -299,7 +301,8 @@ controls.
 
 Across all six cohorts (Table~\ref{tab:datasets}), coarse labels
 were broad cell classes and fine labels were precomputed Leiden
-subclusters enforced as strict refinements of the coarse partition.
+subclusters~\citep{Traag2019} enforced as strict refinements of the
+coarse partition.
 Edge scores combined global and per-group maximum absolute Pearson
 correlation, $S = 0.6 R_{\text{global}} + 0.4 R_{\text{group\,max}}$,
 over the top 600 HVGs; coarse-vs-fine agreement was the bounded-drift
@@ -349,7 +352,10 @@ absolute rank shift.
 Harmony~\citep{Korsunsky2019} was applied in PCA space (50 components)
 on immune, lung, and kidney using three batch keys (technical batch,
 donor, method); scVI~\citep{Gayoso2022} and Scanorama~\citep{Hie2019}
-were run as a cross-method comparison. Sensitivity was measured by
+were run as a cross-method comparison; mutual nearest-neighbour and
+graph-aligned alternatives such as MNN~\citep{Haghverdi2018} and
+BBKNN~\citep{Polanski2020} were not benchmarked here but are noted in
+the discussion as natural candidates for follow-up audits. Sensitivity was measured by
 rank Spearman, sign-flip rate, mean absolute rank shift, and top-$k$
 overlap relative to uncorrected data. External validation used
 precision@500 against DoRothEA AB / ABCD / ChIP-seq--backed subsets
@@ -674,7 +680,7 @@ restrict robust improvements to TRRUST on immune and kidney
 ($\Delta$ precision $+0.026$ to $+0.028$, FDR $< 0.05$;
 Figure~\ref{fig:integration}B); DoRothEA and ChIP-seq--backed gains
 do not survive correction. Perturbation validation against
-Perturb-seq~\citep{Dixit2016} returns small, negative top-500 swap
+Perturb-seq~\citep{Dixit2016, Replogle2022} returns small, negative top-500 swap
 deltas ($-0.002$ to $-0.004$, FDR $= 1.0$): edges \emph{gained} by
 integration are no more likely to be experimentally validated than
 edges \emph{lost}. Ranking perturbation does not translate into
@@ -794,29 +800,22 @@ axis--dataset combination under calibrated criteria.}
 
 \begin{table*}[ht]
 \centering
-\caption{Per-axis robustness summary with key metric, calibrated threshold, and practical recommendation.}
+\caption{Per-axis robustness summary: calibrated criterion and practical recommendation.}
 \label{tab:fragility}
 \small
-\begin{tabularx}{\textwidth}{lXlX}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
 \toprule
-\textbf{Axis} & \textbf{Key Metric} & \textbf{Threshold} & \textbf{Recommendation} \\
+\textbf{Axis} & \textbf{Calibrated criterion} & \textbf{Recommendation} \\
 \midrule
-Cell count & MVCC (top-1k Jaccard $>$ 0.5) & scorer-dependent:
-  200 (Pearson/tree, 4 of 6 cohorts), 500 (Pearson, primary immune
-  and Delorey COVID lung), $>$3{,}000 (scGPT attention, anchor-invariant)
-  & Use the MVCC for your chosen scorer family; apply
-  DoRothEA-constrained policies to rescue small-sample scGPT runs \\
+Cell count   & MVCC (top-1k Jaccard $>0.5$); scorer-dependent: 200 cells (Pearson / tree, 4 of 6 cohorts), 500 cells (Pearson, primary immune and Delorey COVID lung), $>$3{,}000 cells (scGPT attention, anchor-invariant) & Use the MVCC for your chosen scorer family; apply DoRothEA-constrained policies to rescue small-sample scGPT runs \\
 \addlinespace
-Resolution & Dual-null pass rate & Both nulls must pass &
-  Default to coarse; report within-class heterogeneity \\
+Resolution   & Dual-null pass: both global cell-label shuffle and within-coarse constrained shuffle must clear at empirical $p \leq 0.05$ & Default to coarse; report within-class RSS heterogeneity \\
 \addlinespace
-Rare types & Reliability gate (5 criteria) & All must pass &
-  Treat rare-cell edges as hypothesis-generating only \\
+Rare types   & Reliability gate: stability $\geq 0.75$, top-$k$ Jaccard $\geq 0.35$, null AUC $\geq 0.65$, positive tail gap, cell count $\geq 80$ & Treat rare-cell-type edges as hypothesis-generating only \\
 \addlinespace
-Donor & Fixed-holdout Spearman & 90\% of best & Collect $\geq$6 donors (8 conservative) \\
+Donor        & Fixed-holdout Spearman $\geq$ 90\% of best (300 cells/donor) & Collect $\geq 6$ donors (8 for conservative generalisation) \\
 \addlinespace
-Integration & Perturbation swap $\Delta$ & FDR $<$ 0.05 &
-  Report multi-reference validation; avoid universal claims \\
+Integration  & Paired-swap $\Delta$ precision against curated reference, BH-FDR $<0.05$ & Report multi-reference validation; avoid universal claims of biological gain \\
 \bottomrule
 \end{tabularx}
 \end{table*}
@@ -922,12 +921,16 @@ The audit covers four Tabula Sapiens tissues plus one external-lab
 SmartSeq2 lung cohort and one COVID-19 lung disease cohort;
 generalisation to other disease tissues, developmental atlases, and
 cross-species comparisons remains untested. The within-coarse null is
-demanding and other scoring families might clear it; perturbation-backed
-validation remains data-sparse, limiting swap-test power. Three
-integration methods are compared side-by-side
+demanding and other scoring families might clear it; the
+single-cell-DE literature documents how easily under-calibrated nulls
+inflate apparent
+discoveries~\citep{Squair2021}, supporting the within-coarse stringency
+we adopt. Perturbation-backed validation remains data-sparse, limiting
+swap-test power. Three integration methods are compared side-by-side
 (Harmony~\citep{Korsunsky2019}, scVI~\citep{Gayoso2022},
 Scanorama~\citep{Hie2019}); broader integration
-benchmarks~\citep{Luecken2022, Tran2020} suggest extending the
+benchmarks~\citep{Luecken2022, Tran2020} and recent multimodal
+integration frameworks~\citep{Hao2024} suggest extending the
 cross-method comparison further is a natural next step.
 
 % ============================================================
@@ -1058,10 +1061,17 @@ Aibar, S., Gonz{\'a}lez-Blas, C.~B., Moerman, T., et~al. (2017).
 \newblock SCENIC: single-cell regulatory network inference and clustering.
 \newblock \textit{Nature Methods}, 14(11):1083--1086.
 
+\bibitem[Benjamini and Hochberg, 1995]{BenjaminiHochberg1995}
+Benjamini, Y. and Hochberg, Y. (1995).
+\newblock Controlling the false discovery rate: a practical and powerful
+  approach to multiple testing.
+\newblock \textit{Journal of the Royal Statistical Society: Series B
+  (Methodological)}, 57(1):289--300.
+
 \bibitem[Chen and Mar, 2018]{Chen2018}
 Chen, S. and Mar, J.~C. (2018).
-\newblock Evaluating methods of inferring gene regulatory networks highlights their
-  lack of performance for single cell gene expression data.
+\newblock Evaluating methods of inferring gene regulatory networks highlights
+  their lack of performance for single cell gene expression data.
 \newblock \textit{BMC Bioinformatics}, 19(1):232.
 
 \bibitem[Cui et~al., 2024]{Cui2024}
@@ -1078,9 +1088,9 @@ Delorey, T.~M., Ziegler, C.~G.~K., Heimberg, G., et~al. (2021).
 
 \bibitem[Dixit et~al., 2016]{Dixit2016}
 Dixit, A., Parnas, O., Li, B., et~al. (2016).
-\newblock Perturb-Seq: Dissecting molecular circuits with scalable single-cell RNA
-  profiling of pooled genetic screens.
-\newblock \textit{Cell}, 167(7):1853--1866.
+\newblock Perturb-Seq: dissecting molecular circuits with scalable single-cell
+  RNA profiling of pooled genetic screens.
+\newblock \textit{Cell}, 167(7):1853--1866.e17.
 
 \bibitem[Garcia-Alonso et~al., 2019]{GarciaAlonso2019}
 Garcia-Alonso, L., Holland, C.~H., Ibrahim, M.~M., Turei, D., and
@@ -1094,16 +1104,33 @@ Gayoso, A., Lopez, R., Xing, G., et~al. (2022).
 \newblock A Python library for probabilistic analysis of single-cell omics data.
 \newblock \textit{Nature Biotechnology}, 40(2):163--166.
 
+\bibitem[Haghverdi et~al., 2018]{Haghverdi2018}
+Haghverdi, L., Lun, A.~T.~L., Morgan, M.~D., and Marioni, J.~C. (2018).
+\newblock Batch effects in single-cell RNA-sequencing data are corrected by
+  matching mutual nearest neighbors.
+\newblock \textit{Nature Biotechnology}, 36(5):421--427.
+
 \bibitem[Han et~al., 2018]{Han2018}
 Han, H., Cho, J.-W., Lee, S., et~al. (2018).
 \newblock TRRUST v2: an expanded reference database of human and mouse
   transcriptional regulatory interactions.
-\newblock \textit{Nucleic Acids Research}, 46(D1):D199--D202.
+\newblock \textit{Nucleic Acids Research}, 46(D1):D380--D386.
+
+\bibitem[Hao et~al., 2024]{Hao2024}
+Hao, Y., Stuart, T., Kowalski, M.~H., et~al. (2024).
+\newblock Dictionary learning for integrative, multimodal and scalable
+  single-cell analysis.
+\newblock \textit{Nature Biotechnology}, 42(2):293--304.
+
+\bibitem[Heumos et~al., 2023]{Heumos2023}
+Heumos, L., Schaar, A.~C., Lance, C., et~al. (2023).
+\newblock Best practices for single-cell analysis across modalities.
+\newblock \textit{Nature Reviews Genetics}, 24(8):550--572.
 
 \bibitem[Hie et~al., 2019]{Hie2019}
 Hie, B., Bryson, B., and Berger, B. (2019).
-\newblock Efficient integration of heterogeneous single-cell transcriptomes using
-  Scanorama.
+\newblock Efficient integration of heterogeneous single-cell transcriptomes
+  using Scanorama.
 \newblock \textit{Nature Biotechnology}, 37(6):685--691.
 
 \bibitem[Huynh-Thu et~al., 2010]{Huynh-Thu2010}
@@ -1111,12 +1138,6 @@ Huynh-Thu, V.~A., Irrthum, A., Wehenkel, L., and Geurts, P. (2010).
 \newblock Inferring regulatory networks from expression data using tree-based
   methods.
 \newblock \textit{PLoS ONE}, 5(9):e12776.
-
-\bibitem[Lause et~al., 2021]{Lause2021}
-Lause, J., Berens, P., and Kobak, D. (2021).
-\newblock Analytic Pearson residuals for normalization of single-cell RNA-seq
-  UMI data.
-\newblock \textit{Genome Biology}, 22(1):258.
 
 \bibitem[Kharchenko et~al., 2014]{Kharchenko2014}
 Kharchenko, P.~V., Silberstein, L., and Scadden, D.~T. (2014).
@@ -1129,6 +1150,17 @@ Korsunsky, I., Millard, N., Fan, J., et~al. (2019).
   Harmony.
 \newblock \textit{Nature Methods}, 16(12):1289--1296.
 
+\bibitem[Kraskov et~al., 2004]{Kraskov2004}
+Kraskov, A., St{\"o}gbauer, H., and Grassberger, P. (2004).
+\newblock Estimating mutual information.
+\newblock \textit{Physical Review E}, 69(6):066138.
+
+\bibitem[Lause et~al., 2021]{Lause2021}
+Lause, J., Berens, P., and Kobak, D. (2021).
+\newblock Analytic Pearson residuals for normalization of single-cell RNA-seq
+  UMI data.
+\newblock \textit{Genome Biology}, 22(1):258.
+
 \bibitem[Luecken and Theis, 2019]{Luecken2019}
 Luecken, M.~D. and Theis, F.~J. (2019).
 \newblock Current best practices in single-cell RNA-seq analysis: a tutorial.
@@ -1139,17 +1171,51 @@ Luecken, M.~D., B{\"u}ttner, M., Chaichoompu, K., et~al. (2022).
 \newblock Benchmarking atlas-level data integration in single-cell genomics.
 \newblock \textit{Nature Methods}, 19(1):41--50.
 
+\bibitem[Margolin et~al., 2006]{Margolin2006}
+Margolin, A.~A., Nemenman, I., Basso, K., et~al. (2006).
+\newblock ARACNE: an algorithm for the reconstruction of gene regulatory
+  networks in a mammalian cellular context.
+\newblock \textit{BMC Bioinformatics}, 7(Suppl 1):S7.
+
 \bibitem[Moerman et~al., 2019]{Moerman2019}
-Moerman, T., Aibar Santos, S., Gonz{\'a}lez-Blas, C.~B., et~al. (2019).
+Moerman, T., Aibar Santos, S., Bravo Gonz{\'a}lez-Blas, C., et~al. (2019).
 \newblock GRNBoost2 and Arboreto: efficient and scalable inference of gene
   regulatory networks.
 \newblock \textit{Bioinformatics}, 35(12):2159--2161.
 
+\bibitem[Pedregosa et~al., 2011]{Pedregosa2011}
+Pedregosa, F., Varoquaux, G., Gramfort, A., et~al. (2011).
+\newblock Scikit-learn: machine learning in Python.
+\newblock \textit{Journal of Machine Learning Research}, 12:2825--2830.
+
+\bibitem[Pola{\'n}ski et~al., 2020]{Polanski2020}
+Pola{\'n}ski, K., Young, M.~D., Miao, Z., Meyer, K.~B., Teichmann, S.~A., and
+  Park, J.-E. (2020).
+\newblock BBKNN: fast batch alignment of single cell transcriptomes.
+\newblock \textit{Bioinformatics}, 36(3):964--965.
+
 \bibitem[Pratapa et~al., 2020]{Pratapa2020}
-Pratapa, A., Jalihal, A.~P., Law, J.~N., Bharadwaj, A., and Murali, T.~M. (2020).
+Pratapa, A., Jalihal, A.~P., Law, J.~N., Bharadwaj, A., and Murali, T.~M.
+  (2020).
 \newblock Benchmarking algorithms for gene regulatory network inference from
   single-cell transcriptomic data.
 \newblock \textit{Nature Methods}, 17(2):147--154.
+
+\bibitem[Replogle et~al., 2022]{Replogle2022}
+Replogle, J.~M., Saunders, R.~A., Pogson, A.~N., et~al. (2022).
+\newblock Mapping information-rich genotype--phenotype landscapes with
+  genome-scale Perturb-seq.
+\newblock \textit{Cell}, 185(14):2559--2575.e28.
+
+\bibitem[Squair et~al., 2021]{Squair2021}
+Squair, J.~W., Gautier, M., Kathe, C., et~al. (2021).
+\newblock Confronting false discoveries in single-cell differential expression.
+\newblock \textit{Nature Communications}, 12(1):5692.
+
+\bibitem[Stuart et~al., 2019]{Stuart2019}
+Stuart, T., Butler, A., Hoffman, P., et~al. (2019).
+\newblock Comprehensive integration of single-cell data.
+\newblock \textit{Cell}, 177(7):1888--1902.e21.
 
 \bibitem[Svensson, 2020]{Svensson2020}
 Svensson, V. (2020).
@@ -1158,15 +1224,31 @@ Svensson, V. (2020).
 
 \bibitem[{The Tabula Sapiens Consortium}, 2022]{TabulaSapiens2022}
 {The Tabula Sapiens Consortium}. (2022).
-\newblock The Tabula Sapiens: A multiple-organ, single-cell transcriptomic atlas
-  of humans.
+\newblock The Tabula Sapiens: a multiple-organ, single-cell transcriptomic
+  atlas of humans.
 \newblock \textit{Science}, 376(6594):eabl4896.
+
+\bibitem[Theodoris et~al., 2023]{Theodoris2023}
+Theodoris, C.~V., Xiao, L., Chopra, A., et~al. (2023).
+\newblock Transfer learning enables predictions in network biology.
+\newblock \textit{Nature}, 618(7965):616--624.
+
+\bibitem[Traag et~al., 2019]{Traag2019}
+Traag, V.~A., Waltman, L., and van Eck, N.~J. (2019).
+\newblock From Louvain to Leiden: guaranteeing well-connected communities.
+\newblock \textit{Scientific Reports}, 9(1):5233.
 
 \bibitem[Tran et~al., 2020]{Tran2020}
 Tran, H.~T.~N., Ang, K.~S., Chevrier, M., et~al. (2020).
 \newblock A benchmark of batch-effect correction methods for single-cell RNA
   sequencing data.
 \newblock \textit{Genome Biology}, 21(1):12.
+
+\bibitem[Travaglini et~al., 2020]{Travaglini2020}
+Travaglini, K.~J., Nabhan, A.~N., Penland, L., et~al. (2020).
+\newblock A molecular cell atlas of the human lung from single-cell RNA
+  sequencing.
+\newblock \textit{Nature}, 587(7835):619--625.
 
 \bibitem[Wolf et~al., 2018]{Wolf2018}
 Wolf, F.~A., Angerer, P., and Theis, F.~J. (2018).

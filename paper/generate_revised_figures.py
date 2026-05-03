@@ -165,8 +165,9 @@ def fig2_resolution() -> None:
     ax.set_xticklabels(ds_order, rotation=30, ha="right")
     ax.set_ylabel("Resolution Sensitivity Score")
     ax.set_title("Observed vs rank-permutation null\n(all observed 8.8–13.1σ below null)")
-    ax.set_ylim(0, 0.9)
-    _legend(ax, loc="upper right", fontsize=8)
+    ax.set_ylim(0, 0.95)
+    _legend(ax, loc="upper center", bbox_to_anchor=(0.5, -0.28),
+            ncol=2, fontsize=8)
     _panel_label(ax, "A")
 
     # (B) Dual-null pass/fail heatmap
@@ -377,7 +378,9 @@ def fig5_integration() -> None:
     ax.set_xticklabels(labels, fontsize=7, rotation=30, ha="right")
     ax.set_ylabel("Value")
     ax.set_title("Harmony rank perturbation")
-    _legend(ax, loc="upper right", fontsize=8)
+    ax.set_ylim(0, 1.0)
+    _legend(ax, loc="upper center", bbox_to_anchor=(0.5, -0.32),
+            ncol=2, fontsize=8)
     _panel_label(ax, "A")
 
     # (B) Reference precision deltas w/ FDR filled
@@ -431,10 +434,11 @@ def fig5_integration() -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(tissues)
     ax.set_ylabel("Spearman ρ (baseline vs integrated)")
-    ax.set_ylim(-0.1, 1.0)
+    ax.set_ylim(-0.15, 1.05)
     ax.axhline(0, color="black", linewidth=0.5)
-    ax.set_title("WP-6: three integration methods\non the same cells")
-    _legend(ax, loc="lower right", fontsize=8)
+    ax.set_title("Three integration methods\non the same cells")
+    _legend(ax, loc="upper center", bbox_to_anchor=(0.5, -0.18),
+            ncol=3, fontsize=8)
     _panel_label(ax, "C")
 
     fig.suptitle("Figure 5. Integration-method sensitivity: Harmony + scVI + Scanorama",
