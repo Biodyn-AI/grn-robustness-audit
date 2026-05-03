@@ -1,0 +1,18 @@
+# Axis 2: cluster-resolution sensitivity (primary config).
+#
+# The `datasets` list inherits from the built-in default in
+# fragility.axes.axis2_resolution.cli; override here only if you want to
+# add datasets or change paths.
+
+base_seed: 20260218
+
+config:
+  n_top_genes: 600
+  global_weight: 0.6
+  top_k: 1000
+  min_cells_group: 40
+  min_detect_frac: 0.05
+  n_null_permutations: 49     # satisfies the alpha=0.05 floor
+  rss_weights: [0.4, 0.3, 0.3]
+  run_triple_null: false
+  seed_namespace: "axis2:default"

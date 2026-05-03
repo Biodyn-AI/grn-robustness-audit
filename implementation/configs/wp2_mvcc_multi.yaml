@@ -1,0 +1,18 @@
+# WP-2: multi-dataset MVCC with anchor ablation.
+#
+# Cell-size grid and anchor set are the sweep axes that address R1a(ii)
+# ("MVCC computed on one tissue only") and R4(2) ("3,000-cell anchor is
+# both the reference and the emergent threshold -> circular").
+
+base_seed: 20260218
+
+config:
+  n_top_genes: 600
+  min_detect_frac: 0.05
+  cell_sizes: [100, 200, 500, 1000, 2000, 3000, 5000, 8000, 15000]
+  anchors: [3000, 8000, 15000]
+  ks: [100, 500, 1000, 5000]
+  n_subsamples: 16
+  mvcc_threshold_jaccard: 0.5
+  mvcc_threshold_k: 1000
+  seed_namespace: "wp2:default"

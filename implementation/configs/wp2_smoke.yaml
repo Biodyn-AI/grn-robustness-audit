@@ -1,0 +1,11 @@
+base_seed: 20260218
+config:
+  n_top_genes: 200
+  min_detect_frac: 0.05
+  cell_sizes: [200, 500, 1000, 3000]
+  anchors: [3000]
+  ks: [100, 500, 1000]
+  n_subsamples: 4
+  mvcc_threshold_jaccard: 0.5
+  mvcc_threshold_k: 1000
+  seed_namespace: "wp2:smoke"

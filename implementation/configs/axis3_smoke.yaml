@@ -1,0 +1,12 @@
+base_seed: 20260218
+config:
+  panel: "primary"
+  scorer: "pearson"
+  top_k: 100
+  n_bootstraps: 4
+  subsample_fraction: 0.8
+  min_cells: 40
+  rarity_quartile: 0.25
+  n_null_gene_shuffles: 5
+  n_null_cell_perms: 5
+  seed_namespace: "axis3:smoke"

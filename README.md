@@ -28,16 +28,27 @@ grn-robustness-audit/
     axis3_rare_types/            Cell-type metrics, minimum cell-size guidelines
     axis4_donor/                 Composition-control split metrics
     axis5_integration/           Integration summary, precision, PCs sweep
-  scripts/                       Figure generation pipeline
+  scripts/                       Lightweight figure-only pipeline
     generate_source_panels.py    Regenerate individual panels from CSVs
     generate_figures.py          Compose panels into multi-panel PDF figures
   source_panels/                 Pre-generated panels not derived from CSVs
-  paper/                         LaTeX manuscript and compiled figures
+  implementation/                Full reproduction package (`fragility` Python pkg)
+    fragility/                   Preprocessing, panels, scorers, nulls, metrics, axes, CLI
+    configs/                     YAML configs for axis runs and work packages
+    scripts/                     End-to-end pipeline drivers
+    tests/                       Unit tests
+    Makefile                     `make audit` regenerates every CSV and figure
+    pyproject.toml               Installable package definition
+  paper/                         LaTeX manuscript, figures, and revision artifacts
     main.tex                     Main paper
     cover_letter.tex             Submission cover letter
-    figures/                     Compiled multi-panel PDF figures (6 total)
-  Makefile                       Build automation
-  requirements.txt               Python dependencies
+    response_to_reviewers.md     Per-reviewer response with section traceability
+    supplementary_methods_s2.md  AI-agent audit protocol and rubric
+    generate_revised_figures.py  Regenerate all 14 figure PDFs from CSVs
+    figures/                     7 main figure PDFs
+    figures/supplementary/       7 supplementary figure PDFs
+  Makefile                       Build automation (figure-only pipeline)
+  requirements.txt               Python dependencies (figure-only pipeline)
   CITATION.cff                   Citation metadata
   LICENSE                        MIT License
 ```
@@ -98,7 +109,8 @@ All result CSV files are self-contained and can be inspected independently.
 
 Analyses use processed single-cell data from:
 - **Tabula Sapiens** (kidney, lung, immune tissues): [tabula-sapiens-portal.ds.czbiohub.org](https://tabula-sapiens-portal.ds.czbiohub.org/)
-- **External lung cohort**: see Methods section of the paper
+- **Krasnow lung cohort** (external SmartSeq2 lung): see Methods
+- **Delorey 2021 COVID lung** (disease cohort, CellxGene): see Methods
 
 ## Citation
 

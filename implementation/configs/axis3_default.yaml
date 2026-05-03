@@ -1,0 +1,15 @@
+# Axis 3: rare-cell-type reliability. Emits cell_type_metrics.csv
+# consumed by WP-4.
+
+base_seed: 20260218
+config:
+  panel: "primary"
+  scorer: "pearson"
+  top_k: 100
+  n_bootstraps: 8
+  subsample_fraction: 0.8
+  min_cells: 40
+  rarity_quartile: 0.25
+  n_null_gene_shuffles: 20
+  n_null_cell_perms: 20
+  seed_namespace: "axis3:default"
