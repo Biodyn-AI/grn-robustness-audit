@@ -255,4 +255,4 @@ The Zenodo archive at `10.5281/zenodo.20009065` is a frozen snapshot of the code
 
 We are happy to provide any additional analyses or clarifications the editor and reviewers request.
 
-— Ihor Kendiukhov, on behalf of the author team
+— Ihor Kendiukhov
