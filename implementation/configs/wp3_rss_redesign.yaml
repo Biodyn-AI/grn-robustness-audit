@@ -1,0 +1,13 @@
+# WP-3 configuration: RSS redesign with weight sweep and empirical null.
+#
+# `input_scores_csv` must be a long-format table with one row per edge
+# containing columns: dataset, scorer, pair_id, edge_id, score_coarse,
+# score_fine. See fragility.axes.axis2_resolution.export_scored_pairs for
+# the canonical producer.
+
+k: 1000
+n_permutations: 1000
+weights_step: 0.1
+default_weights: [0.4, 0.3, 0.3]
+input_scores_csv: "outputs/axis2/scored_pairs.csv"
+base_seed: 20260218

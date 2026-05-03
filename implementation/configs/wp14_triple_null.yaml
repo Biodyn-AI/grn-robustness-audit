@@ -1,0 +1,17 @@
+# WP-14: triple-null calibration (global + within-coarse + degree-preserving rewire).
+#
+# Reuses the Axis-2 default dataset list via runtime merging and simply
+# flips on run_triple_null.
+
+base_seed: 20260218
+
+config:
+  n_top_genes: 600
+  global_weight: 0.6
+  top_k: 1000
+  min_cells_group: 40
+  min_detect_frac: 0.05
+  n_null_permutations: 49
+  rss_weights: [0.4, 0.3, 0.3]
+  run_triple_null: true
+  seed_namespace: "axis2:wp14"

@@ -1,0 +1,6 @@
+k: 1000
+n_permutations: 500
+weights_step: 0.1
+default_weights: [0.4, 0.3, 0.3]
+input_scores_csv: "outputs/axis5/scored_pairs.csv"
+base_seed: 20260218

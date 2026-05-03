@@ -1,0 +1,11 @@
+base_seed: 20260218
+config:
+  n_top_genes: 900
+  global_weight: 0.6
+  top_k: 1000
+  min_cells_group: 40
+  min_detect_frac: 0.05
+  n_null_permutations: 25
+  rss_weights: [0.4, 0.3, 0.3]
+  run_triple_null: false
+  seed_namespace: "axis2:wp13:ng900"

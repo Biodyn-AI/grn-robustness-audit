@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fragility"
+version = "0.1.0"
+description = "Unified implementation for the Five Axes of Fragility GRN robustness audit"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Ihor Kendiukhov", email = "kenduhov.ig@gmail.com" }]
+license = { text = "MIT" }
+keywords = ["single-cell", "GRN", "gene regulatory networks", "robustness", "benchmarking"]
+
+dependencies = [
+    "numpy>=1.22",
+    "pandas>=1.4",
+    "scipy>=1.8",
+    "scikit-learn>=1.1",
+    "anndata>=0.9",
+    "scanpy>=1.9",
+    "h5py>=3.6",
+    "tqdm>=4.60",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+tree = ["arboreto>=0.1.6"]                         # GRNBoost2, GENIE3
+integration = ["harmonypy>=0.0.9", "scanorama>=1.7"]
+scvi = ["scvi-tools>=1.0"]
+scgpt = ["torch>=2.0"]                             # scGPT attention scorer
+viz = ["matplotlib>=3.5", "seaborn>=0.12"]
+test = ["pytest>=7.0", "pytest-cov>=4.0"]
+all = [
+    "arboreto>=0.1.6",
+    "harmonypy>=0.0.9",
+    "scanorama>=1.7",
+    "scvi-tools>=1.0",
+    "torch>=2.0",
+    "matplotlib>=3.5",
+    "seaborn>=0.12",
+]
+
+[project.scripts]
+fragility = "fragility.cli.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fragility*"]

@@ -1,0 +1,22 @@
+base_seed: 20260218
+datasets:
+  - name: "immune"
+    path: "/Users/ihorkendiukhov/biodyn-work/single_cell_mechinterp/outputs/tabula_sapiens_immune_subset_hpn_processed.h5ad"
+    donor_col: "donor_id"
+    max_donors: 13
+    cells_per_donor: 200
+  - name: "lung"
+    path: "/Users/ihorkendiukhov/biodyn-work/single_cell_mechinterp/outputs/invariant_causal_edges/lung/processed.h5ad"
+    donor_col: "donor_id"
+    max_donors: 4
+    cells_per_donor: 800
+config:
+  panel: "hematopoiesis_76x108"
+  scorer: "pearson"
+  train_donor_counts: [2, 4, 6, 8, 10]
+  holdout_donors: 2
+  n_splits_per_count: 20
+  top_ks: [50, 100, 250, 500]
+  rel_threshold: 0.90
+  rel_threshold_conservative: 0.95
+  seed_namespace: "axis4:cells200"
