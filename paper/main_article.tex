@@ -1,0 +1,1293 @@
+\pdfminorversion=5
+\documentclass[12pt]{article}
+
+% --- Page geometry (Bioinformatics Oxford style) ---
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}          % Times-like font
+
+% --- Core packages ---
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage[round]{natbib}     % Harvard-style citations
+\usepackage{lineno}            % Line numbering for review
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage{tabularx}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black
+}
+
+\doublespacing
+
+\title{\textbf{Five Axes of Fragility: A Systematic Robustness Audit of Gene-Regulatory-Network Inference from Single-Cell Foundation Models}}
+
+\author{Ihor Kendiukhov\textsuperscript{1,*} \\[6pt]
+\small\textsuperscript{1}Department of Computer Science, University of T{\"u}bingen, T{\"u}bingen, Germany \\
+\small\textsuperscript{*}Corresponding author: \href{mailto:kenduhov.ig@gmail.com}{kenduhov.ig@gmail.com} \\
+\small ORCID: \href{https://orcid.org/0000-0001-5342-1499}{0000-0001-5342-1499}
+}
+
+\date{}
+
+\begin{document}
+
+
+
+
+
+
+
+
+
+
+\title{Five Axes of Fragility: A Systematic Robustness Audit of Gene-Regulatory-Network Inference from Single-Cell Foundation Models}
+
+\author{Ihor Kendiukhov}
+
+
+
+
+
+
+
+
+
+\begin{abstract}\textbf{Motivation:}
+Gene-regulatory-network (GRN) inference from single-cell transcriptomics is
+increasingly used to prioritize regulatory hypotheses, yet most benchmarks
+evaluate accuracy under fixed preprocessing without testing whether rankings
+survive realistic analytical perturbations, and most published fragility claims
+are made under a single scorer family.\\
+\textbf{Results:}
+We audit GRN edge rankings across five fragility axes---cell count,
+clustering resolution, rare-cell reliability, donor generalization, and
+integration sensitivity---on four Tabula Sapiens tissues, one
+non-Tabula-Sapiens external lung cohort \citep[SmartSeq2;][]{Travaglini2020},
+and one disease cohort (Delorey et al.\ 2021 COVID-19
+lung atlas, 116{,}313 cells, 27 donors), using five scorer families:
+Pearson correlation, mutual information, GRNBoost2, GENIE3, and
+scGPT attention.
+Our central findings are that:
+(i)~cluster-resolution stability under a bounded-drift
+Resolution-Sensitivity-Score sits 9--13 standard deviations below a
+rank-permutation null, yet every cohort fails a within-coarse
+constrained shuffle, so dual-null calibration recommends coarse or
+hybrid clustering across the full 66-point weight simplex;
+(ii)~the rare-vs-abundant reliability-gate gap direction is preserved
+at 100\% of 5{,}880 reasonable threshold combinations, establishing
+that the 0\% rare passage rate is not an artifact of threshold choice;
+(iii)~the minimum valid cell count (MVCC) is strongly scorer-dependent:
+under scGPT attention it exceeds 3{,}000 cells, whereas under
+Pearson-over-highly-variable-genes it is 200 cells for four of six
+cohorts and 500 cells for the two largest ones (primary immune and
+Delorey COVID lung), and it is anchor-invariant;
+(iv)~6--8 donors are needed for immune generalization under strict
+cells-per-donor balancing, and fewer under looser balancing;
+(v)~integration method choice is not neutral: Harmony preserves
+rankings reasonably (Spearman 0.63--0.87, sign-flip 6--17\%), scVI
+moderately perturbs them (Spearman 0.36--0.57, sign-flip 18--30\%),
+and Scanorama on kidney and lung produces near-random rankings
+(Spearman $\approx 0$, sign-flip 44--47\%);
+(vi)~scGPT attention rankings are statistically uncorrelated with
+classical-scorer rankings on matched kidney cells (Spearman
+$\rho \leq 0.20$, top-100 Jaccard $\leq 0.06$), so within-scorer
+fragility profiles do not transfer across scorer families.
+A degree-preserving edge-rewire null is cleared at $p = 0.02$ on every
+cohort, rebutting the possibility that the within-coarse-shuffle
+failures reflect null over-stringency rather than genuine signal loss.
+No single cohort passes all five axes under calibrated criteria.\\
+\textbf{Availability and Implementation:}
+The unified fragility package, reproducing every CSV and figure from raw
+h5ad, is at \url{https://github.com/Biodyn-AI/grn-robustness-audit} and
+archived at \url{https://doi.org/10.5281/zenodo.20009065}.\\
+\textbf{Contact:} \href{mailto:ihor.kendiukhov@student.uni-tuebingen.de}{ihor.kendiukhov@student.uni-tuebingen.de}\\
+\textbf{Supplementary Information:}
+Supplementary figures (full Jaccard-vs-cell-count curves, weight-simplex
+sweep, 5{,}880-point threshold-sensitivity heatmap, triple-null calibration,
+gene-dimension and normalization ablations) are available at
+\textit{Bioinformatics} online.\end{abstract}
+
+\noindent\textbf{Keywords:} gene regulatory networks, robustness, single-cell transcriptomics, benchmarking, batch correction, rare cell types, reproducibility
+
+\maketitle
+
+% ============================================================
+% 1. INTRODUCTION
+% ============================================================
+\section{Introduction}
+
+Single-cell RNA-sequencing enables transcriptome-wide inference of
+gene regulatory networks (GRNs). Classical correlation- and tree-based
+scorers (SCENIC~\citep{Aibar2017}, GRNBoost2~\citep{Moerman2019},
+GENIE3~\citep{Huynh-Thu2010}, ARACNe-family
+methods~\citep{Margolin2006}) and attention-derived scores from
+single-cell foundation models such as scGPT~\citep{Cui2024} and
+Geneformer~\citep{Theodoris2023} all rank TF--target edges as regulatory
+hypotheses, but confidence in those rankings depends on analytical
+choices that are rarely stress-tested. Published
+benchmarks~\citep{Pratapa2020, Chen2018} evaluate accuracy against
+fixed references under fixed preprocessing, leaving open the question
+of whether the same edges survive a different cell count, clustering
+resolution, integration method, or donor cohort. Atlas-level
+integration benchmarks~\citep{Luecken2022, Tran2020} document that
+batch correction perturbs downstream analyses, but the specific impact
+on TF--target ranking stability has not been systematically
+characterised.
+
+We address this gap by conducting a systematic multi-axis robustness audit
+of TF--target edge rankings across five scorer families (Pearson correlation,
+mutual information, GRNBoost2, GENIE3, and scGPT attention) and six cohorts
+(four Tabula Sapiens tissues, one external-lab lung dataset, and one
+COVID-19 disease atlas). Our audit spans
+five axes that correspond to the most common sources of analytical variation
+in single-cell GRN workflows:
+
+\begin{enumerate}
+\item \textbf{Cell-count subsampling:} How many cells are needed for stable
+      rankings, is that threshold dependent on the reference-anchor cell
+      count, and do prior-constrained policies rescue small-sample regimes?
+\item \textbf{Cluster-resolution sensitivity:} Does switching between coarse
+      and fine clustering change which edges are prioritized, and does the
+      conclusion survive rank-permutation nulls, weight-choice sensitivity,
+      gene-dimension sweeps, and a triple-null calibration?
+\item \textbf{Rare-cell-type reliability:} Do rare cell types yield
+      mechanistic edges that pass the same confidence gates as abundant
+      types, and how robust is that gap to the choice of gate thresholds?
+\item \textbf{Donor generalization:} How many donors are needed for rankings
+      to transfer to held-out individuals, and is the threshold dependent
+      on cells-per-donor balancing choices?
+\item \textbf{Integration-method sensitivity:} Do batch-correction
+      methods (Harmony, scVI, and Scanorama) alter edge rankings, and do
+      any of those changes improve biological validity as measured by
+      perturbation-backed evidence rather than literature precision alone?
+\end{enumerate}
+
+Beyond the per-axis questions, we ask an orthogonal one: \emph{do
+fragility conclusions drawn under one scorer transfer to another?}
+We find that scGPT attention rankings are statistically uncorrelated
+with Pearson / mutual information / GRNBoost2 / GENIE3 rankings on the
+same cells and the same edge universe ($\rho \leq 0.20$, top-100
+Jaccard $\leq 0.06$), which generalises the message from ``rankings
+are fragile under preprocessing perturbations'' to ``rankings are
+fragile under preprocessing perturbations \emph{and} scorer choice.''
+
+Each axis was developed through an adversarial-review loop in which an
+AI-assisted review agent systematically challenged the initial analysis for
+methodological weaknesses (confounded null designs, overfitted
+hyperparameters, hidden data leakage, uninterpretable composite metrics,
+panel-selection arbitrariness), corrective experiments were designed and
+executed, and claims were updated accordingly. A full protocol description
+(base model, prompt templates, round-by-round logs, and a
+pre-registered audit of 27 agent-raised issues under a frozen rubric)
+is provided in Supplementary Methods~S2.
+
+The remainder of this paper describes the shared experimental setup
+(Section~2), presents per-axis results (Section~3), reports a
+scorer-divergence analysis (Section~3.6), analyses cross-axis
+interactions (Section~3.7), and provides a practical guidelines table
+for practitioners (Section~4).
+
+% ============================================================
+% 2. METHODS
+% ============================================================
+\section{Methods}
+
+\subsection{Datasets, preprocessing, and panels}
+
+All analyses used processed single-cell datasets from the Tabula
+Sapiens atlas~\citep{TabulaSapiens2022}, one external lung cohort
+(\citealt{Travaglini2020} SmartSeq2), and one COVID-19 disease lung
+atlas (Delorey et al.\ 2021~\citep{Delorey2021}; Table~\ref{tab:datasets}).
+Datasets were preprocessed using Scanpy~\citep{Wolf2018} following established
+best practices~\citep{Luecken2019, Heumos2023}. The primary normalization was
+depth-normalization (``\texttt{normalize\_total}'' with ``\texttt{target\_sum}='' $10^4$)
+followed by \texttt{log1p}, with the top 600 highly-variable genes selected
+using the Seurat v3 flavor~\citep{Stuart2019}. Two alternative normalization schemes---median-ratio
+size-factor normalization and Pearson residuals~\citep{Lause2021}---were
+evaluated as an ablation (Supplementary Fig.~S6) and produced the same
+calibrated recommendation on every axis we examined. Every pipeline run
+stamps the full preprocessing parameter set into its provenance record;
+numerical reproducibility is therefore traceable to an explicit
+configuration file rather than to narrative prose.
+
+TF--target edge panels used in axes with panel-restricted scoring were
+loaded from a shared registry (Supplementary Table~S1) that resolves each
+panel to an exact edge list at runtime. Named panels include:
+``\emph{primary}'' (DoRothEA~\citep{GarciaAlonso2019} confidence A/B
+$\cap$ TRRUST~\citep{Han2018}, 3{,}384 edges before gene-universe
+restriction); ``\emph{dorothea\_ab}''; ``\emph{trrust}'';
+``\emph{hematopoiesis\_76$\times$108}'' (76 hematopoiesis TFs $\times$ 108
+immune / cross-tissue targets = 8{,}208 directed edges, used in
+Axis~4); and ``\emph{shared\_36}'' (the TRRUST-intersected
+activation/repression panel used for Axis~3 cross-dataset sensitivity).
+Axis~2 operates on all HVG pairs rather than a curated panel so that the
+coarse-versus-fine question is closed under a shared edge universe.
+
+\begin{table*}[ht]
+\centering
+\caption{Datasets used across the five robustness axes. External lung =
+\citet{Travaglini2020} SmartSeq2 cohort (non-Tabula-Sapiens, non-10x
+technology), used to verify that conclusions survive outside the
+Tabula Sapiens pipeline. Delorey COVID lung = Delorey et al.\ 2021
+COVID-19 lung atlas, providing a disease-state cohort and a
+large-scale validation (116{,}313 cells across 27 donors).}
+\label{tab:datasets}
+\small
+\begin{tabular}{lrrrl}
+\toprule
+\textbf{Dataset} & \textbf{Cells} & \textbf{Donors} & \textbf{Batches} & \textbf{Axes} \\
+\midrule
+Kidney              & 8{,}000--11{,}376  & 1    & 2  & 1, 2, 3, 5 \\
+Lung                & 15{,}000--20{,}000 & 4    & 7  & 2, 3, 4, 5 \\
+Immune              & 15{,}000--20{,}000 & 12--20 & 42 & 2, 3, 4, 5 \\
+Immune inv.         & 15{,}000           & ---  & --- & 2, 3 \\
+External lung       & 9{,}000            & ---  & --- & 2, 3 \\
+Delorey COVID lung  & 116{,}313          & 27   & --- & 1, 2, 3 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Edge scorers}
+
+Every axis pipeline accepts a pluggable ``edge scorer'' via a shared
+interface, so the same preprocessing and null library feeds every
+methodological choice. Five scorers are implemented:
+
+\begin{itemize}
+\item \textbf{Pearson correlation} on column-standardized expression.
+      Sign of correlation is tracked separately from the magnitude score.
+\item \textbf{Mutual information} via the \texttt{mutual\_info\_regression}
+      routine in scikit-learn~\citep{Pedregosa2011}, which implements
+      the Kraskov--St\"ogbauer--Grassberger $k$-nearest-neighbour
+      estimator~\citep{Kraskov2004} ($k=3$, seed fixed).
+\item \textbf{GRNBoost2}~\citep{Moerman2019} and
+      \textbf{GENIE3}~\citep{Huynh-Thu2010}: per-target gradient-boosted
+      and random-forest regression importance respectively (500
+      estimators, sqrt feature subsampling).
+\item \textbf{scGPT attention}~\citep{Cui2024}, extracted from the public
+      \emph{whole-human} checkpoint. For each cell we tokenise the panel
+      genes, forward-pass through the twelve transformer layers, and
+      average attention weights across all layers and heads; edge scores
+      are the symmetrised cell-wise mean attention between each TF and
+      target token.
+\end{itemize}
+
+The scorer used for any figure or statistic is stated in the caption
+and §3.6 reports the pairwise agreement matrix. No model is trained or
+fine-tuned in this work: scGPT enters strictly as a frozen pretrained
+feature extractor, and the remaining scorers are unsupervised
+statistical estimators.
+
+\subsection{Metric definitions}
+
+For top-$k$ index sets $T_a^k, T_b^k$ from two scoring runs on a shared
+edge universe, the bounded-drift Resolution Sensitivity Score is
+$\text{RSS}_k = w_o(1 - \text{overlap}_k) + w_j(1 - \text{Jaccard}_k) + w_d\,\text{drift\_norm}_k$,
+where $\text{drift\_norm}_k = \min(1, \operatorname{median}_{i \in T_a^k \cap T_b^k}|r_{a,i} - r_{b,i}|/k)$
+maps median rank-shift to $[0, 1]$. Unless noted, $k = 1{,}000$ and
+weights are $(0.4, 0.3, 0.3)$; the weight simplex is swept in §3.2.
+The remaining metrics are standard: Spearman rank stability,
+null-separation AUC, tail gap (top-5\% quantile observed minus null),
+sign-flip rate, and mean absolute rank shift. A null family is
+\emph{cleared} when the empirical $p$ against it is $\leq 0.05$
+with $\geq 19$ permutations.
+
+\subsection{Axis~1: Cell-count subsampling}
+
+Cell-count robustness was evaluated on all cohorts for which a
+sufficient cell count was available (kidney, lung, immune,
+immune-invariant, external lung, and Delorey COVID lung) at cell
+counts $\{200, 500, 1{,}000, 2{,}000, 3{,}000, 5{,}000, 8{,}000,
+15{,}000\}$ (clipped to dataset maximum) with eight independent
+subsamples per size. An \emph{anchor ablation} was added to address
+the concern that using a 3{,}000-cell reference is circular: each
+dataset's MVCC was computed independently against a 3{,}000-cell and
+an 8{,}000-cell anchor (plus a 15{,}000-cell anchor for Delorey,
+whose cell count permits it). Per-cell, per-anchor top-$k$ Jaccard
+and overlap were computed at $k \in \{100, 500, 1{,}000, 5{,}000\}$,
+plus top-1\%, top-5\%, and top-10\% proportions of the edge universe,
+and per-target top-5 and top-10 overlaps.
+
+The Minimum Valid Cell Count (MVCC) is the smallest cell count at which
+the mean top-1{,}000 Jaccard exceeds 0.5 against the reference anchor.
+We report MVCC per (dataset, anchor, scorer) triple so that both
+anchor-dependence and scorer-dependence can be read directly from
+the results. Benjamini--Hochberg correction~\citep{BenjaminiHochberg1995}
+was applied to the family of per-(policy, cell-count) $p$-values testing
+whether prior-constrained rankings differ from matched random-gene-set
+controls.
+
+\subsection{Axis~2: Cluster-resolution sensitivity}
+
+Across all six cohorts (Table~\ref{tab:datasets}), coarse labels
+were broad cell classes and fine labels were precomputed Leiden
+subclusters~\citep{Traag2019} enforced as strict refinements of the
+coarse partition.
+Edge scores combined global and per-group maximum absolute Pearson
+correlation, $S = 0.6 R_{\text{global}} + 0.4 R_{\text{group\,max}}$,
+over the top 600 HVGs; coarse-vs-fine agreement was the bounded-drift
+RSS of §2.2. A tiered calibration applied three null families
+(global cell-label shuffle, within-coarse constrained shuffle,
+degree-preserving bipartite rewire; 49 permutations each), downgrading
+the base RSS recommendation (``fine'' $\leq 0.30$, ``hybrid'' $\leq 0.45$,
+else ``coarse'') one level per failed null family. RSS weights were
+also swept over the full 66-point simplex at step 0.1, an empirical
+null was constructed from 1{,}000 rank permutations per cohort, the
+HVG count was swept over $\{300, 600, 900, 1{,}200\}$, and the three
+normalization schemes from §2.1 were tested (Supplementary Fig.~S6).
+
+\subsection{Axis~3: Rare-cell-type reliability}
+
+Cell types with $\geq 40$ cells were tested under two pipelines: an
+adaptive-panel pipeline on three Tabula Sapiens tissues plus external
+lung (88 eligible cell types) and a shared-``primary''-panel pipeline
+on all five Tabula Sapiens cohorts (39 eligible cell types); Delorey
+COVID lung adds nine coarse compartments. Rarity was defined by
+within-dataset cell-count quartile. Eight bootstrap replicates at 80\%
+subsampling were drawn per cell type and top-$k = 100$ edges scored,
+yielding rank stability (Spearman), top-$k$ Jaccard, and
+null-separation AUC and tail gap under cell-permutation and
+gene-shuffle nulls. The pre-registered primary reliability gate was
+stability $\geq 0.75$, Jaccard $\geq 0.35$, AUC $\geq 0.65$, positive
+tail gap, and cell count $\geq 80$; these were fixed before a
+five-dimensional 5{,}880-point threshold-sensitivity grid was swept
+to test the 0\% rare-passage headline.
+
+\subsection{Axis~4: Donor generalization}
+
+Donor generalization was assessed on immune (up to 13 donors at 200
+cells/donor, or 8 at 300 cells/donor) and lung (4 donors, 800
+cells/donor) using the hematopoiesis $76 \times 108$ panel
+(Supplementary Table~S1; 8{,}208 directed edges before gene-universe
+restriction). A fixed-holdout design (two holdout donors held constant
+to eliminate train-size / holdout-size confounding) sampled training
+donor counts $\in \{2, 4, 6, 8, 10\}$ with 20 random splits per count.
+The cells-per-donor parameter was swept between 200 and 800. Transfer
+was quantified by Spearman $\rho$, Pearson $r$, top-$k$ overlap and
+Jaccard at $k \in \{50, 100, 250, 500\}$, sign-flip rate, and mean
+absolute rank shift.
+
+\subsection{Axis~5: Integration-method sensitivity}
+
+Harmony~\citep{Korsunsky2019} was applied in PCA space (50 components)
+on immune, lung, and kidney using three batch keys (technical batch,
+donor, method); scVI~\citep{Gayoso2022} and Scanorama~\citep{Hie2019}
+were run as a cross-method comparison; mutual nearest-neighbour and
+graph-aligned alternatives such as MNN~\citep{Haghverdi2018} and
+BBKNN~\citep{Polanski2020} were not benchmarked here but are noted in
+the discussion as natural candidates for follow-up audits. Sensitivity was measured by
+rank Spearman, sign-flip rate, mean absolute rank shift, and top-$k$
+overlap relative to uncorrected data. External validation used
+precision@500 against DoRothEA AB / ABCD / ChIP-seq--backed subsets
+and TRRUST with paired swap binomial tests and BH-FDR correction;
+perturbation validation used Dixit-derived
+tables~\citep{Dixit2016}. A $n_{\text{pcs}} \in \{30, 50, 80\}$ sweep
+probed the robustness--performance tradeoff.
+
+\subsection{Scorer-divergence and cross-axis analyses}
+
+To test transferability of fragility conclusions across scorers, all
+five scorers were run on the same 800 kidney cells under the
+hematopoiesis $76 \times 108$ panel (after restriction to kidney's
+gene universe: 75 of 76 TFs, 99 of 108 targets, 7{,}425 directed
+edges); pairwise agreement was reported via Spearman $\rho$, top-100
+and top-500 Jaccard, and the bounded-drift RSS. A cross-axis fragility
+profile then summarised, per (axis, cohort), the severity of the
+robustness concern (pass / marginal / fail) under each axis'
+calibrated threshold.
+
+\subsection{Adversarial AI-assisted review protocol}
+
+Each axis passed through an iterative AI-assisted review loop that
+adversarially challenged the initial analysis under a fixed rubric
+(confounded nulls, overfitted hyperparameters, leakage, composite-metric
+uninterpretability, threshold sensitivity); corrective experiments were
+designed by the agent, executed, and verified before any claim was
+updated. The base model, prompt templates, round-by-round logs, and the
+27-issue full-census audit under the frozen rubric are in Supplementary
+Methods~S2.
+
+% ============================================================
+% 3. RESULTS
+% ============================================================
+\section{Results}
+
+\subsection{Axis~1: The minimum valid cell count is strongly scorer-dependent
+and anchor-invariant}
+
+Under scGPT attention, even moderate cell-count reductions reshape
+top-ranked edges: at 200 cells on kidney, top-1{,}000 Jaccard against
+the 3{,}000-cell anchor is 0.001--0.029, and at 1{,}000 cells it
+remains below 15\%, so the scGPT-attention MVCC exceeds 3{,}000 cells.
+
+The threshold is scorer-specific. Under Pearson correlation on 600
+HVGs (Figure~\ref{fig:cellcount}A), the MVCC (smallest cell count at
+which mean top-1{,}000 Jaccard exceeds 0.5) is \textbf{200 cells for
+kidney, lung, immune-invariant, and external lung} and \textbf{500 cells
+for primary immune and Delorey COVID lung}. MVCC is
+\emph{anchor-invariant} (Figure~\ref{fig:cellcount}B;
+Supplementary Fig.~S1): identical values emerge against
+3{,}000-, 8{,}000-, and (Delorey only) 15{,}000-cell anchors,
+ruling out anchor-threshold circularity. Kidney Jaccard climbs
+0.515 (200 cells) $\to$ 0.747 (1{,}000) $\to$ 0.839 (3{,}000) at the
+3{,}000-cell anchor; other cohorts follow similar trajectories
+(Supplementary Fig.~S5).
+
+Constraining scGPT-attention scoring to DoRothEA TF--target pairs
+stabilises kidney rankings dramatically: the two TF-guided policies
+hold Jaccard at 0.73--0.76 (200 cells) and 0.86--0.87 (1{,}000 cells)
+versus 0.002--0.008 for matched random gene-set controls
+(BH-corrected $q \approx 0.017$; Figure~\ref{fig:cellcount}B), and recover
+5.5--6.6\% of top-1{,}000 edges with independent DoRothEA support
+(versus 0.2--0.3\% for controls). Prior-constrained policies therefore
+keep rankings meaningful far below the scGPT-specific MVCC. The
+guidance is: \emph{plan for $\geq 3{,}000$ cells under scGPT or use
+prior constraints; 200--500 cells suffice under Pearson, MI, and tree
+scorers on the cohorts tested}. §3.6 examines scorer-dependence directly.
+
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/fig1_cell_count.pdf}
+\caption{\textbf{Cell-count subsampling robustness (Pearson scorer).}
+(A)~Top-1{,}000 reference Jaccard as a function of cell count for each
+cohort (Pearson correlation over 600 HVGs), computed against a
+3{,}000-cell anchor. Shaded bands: standard deviation across eight
+independent subsamples per size. Dashed horizontal line: the MVCC
+Jaccard threshold (0.5). (B)~MVCC (smallest cell count clearing the
+0.5 Jaccard threshold) reported against two reference anchors per
+cohort, demonstrating anchor-invariance.
+Full per-scorer Jaccard-vs-cells curves are in Supplementary Fig.~S1.}
+\label{fig:cellcount}
+\end{figure*}
+
+\subsection{Axis~2: Dual-null calibration pushes every cohort to coarse
+or hybrid clustering; the recommendation is robust to weight choice,
+gene dimension, normalization, and the addition of a third null family}
+
+Does coarse-versus-fine clustering change the resulting GRN? Observed
+bounded-drift RSS at $k = 1{,}000$ is 0.218 (immune-invariant) to
+0.402 (lung) (Figure~\ref{fig:resolution}A). A 1{,}000-permutation
+empirical null gives mean $\approx 0.79$ and 5th percentile $\approx 0.73$,
+placing every cohort 8.8--13.1 standard deviations below the null mean
+($p = 0.001$ floor; Supplementary Fig.~S3): every cohort is therefore
+significantly more stable than a random coarse-vs-fine pairing.
+
+Dual-null calibration refines the picture. Only kidney, lung, and
+immune-invariant clear the global cell-label shuffle ($p = 0.02$);
+\emph{no} cohort clears the within-coarse constrained shuffle
+($p \geq 0.14$ across all five Tabula Sapiens cohorts). Requiring both
+nulls for any ``fine'' or ``hybrid'' recommendation downgrades four
+Tabula Sapiens cohorts to \textbf{coarse} and immune-invariant to
+\textbf{hybrid} (Figure~\ref{fig:resolution}B); the apparent
+fine-stability of immune-invariant and external lung evaporates once
+the within-coarse null is applied. Delorey COVID (116{,}313 cells)
+has the lowest raw RSS of any cohort (0.173) but fails the
+within-coarse null at $p = 0.69$ and therefore also downgrades to
+\textbf{hybrid}.
+
+The dual-null recommendation is invariant to weight choice
+(66-point simplex sweep at step 0.1, Supplementary Fig.~S2),
+HVG count ($n \in \{300, 600, 900, 1{,}200\}$; immune-invariant
+flips coarse$\leftrightarrow$hybrid but never to fine), and
+normalization scheme (depth-log1p / size-factor-log1p / Pearson
+residuals on kidney all give coarse; Supplementary Fig.~S6). A
+triple-null calibration adds a permissive degree-preserving bipartite
+rewire as a third null: every cohort clears it at the permutation
+floor ($p = 0.02$) while still failing within-coarse at $p \geq 0.22$,
+so the within-coarse failure reflects genuine over-partitioning rather
+than null over-stringency (Supplementary Fig.~S7).
+
+Within-class heterogeneity remains considerable even after coarsening:
+T cells in kidney (RSS 0.466) and immune (0.314), erythroid lineage
+in immune (0.535) and immune-invariant (0.522), and B-lineage
+lymphocytes in kidney (0.597) are markedly more fine-sensitive than
+their surrounding compartments (full per-compartment breakdown in the
+reproduction package).
+
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{figures/fig2_resolution.pdf}
+\caption{\textbf{Cluster-resolution sensitivity and dual-null calibration.}
+(A)~Observed bounded-drift Resolution Sensitivity Score (coloured bars)
+versus the rank-permutation null mean and 5th--95th percentile (grey
+error bars) for each Tabula Sapiens cohort; every observed value sits
+8.8--13.1 standard deviations below the null. (B)~Dual-null pass/fail
+heatmap: only kidney, lung, and immune-invariant clear the global
+cell-label shuffle; no cohort clears the within-coarse constrained
+shuffle. (C)~Top-15 most fine-sensitive coarse groups by within-coarse
+RSS; dotted lines mark the base-RSS ``fine'' (0.30) and ``hybrid''
+(0.45) thresholds. Colour encodes the cohort of origin.}
+\label{fig:resolution}
+\end{figure*}
+
+\subsection{Axis~3: Rare cell types exhibit a reliability gap that is
+robust to 5{,}880 threshold combinations}
+
+Are edges inferred from rare cell types as trustworthy as those from
+abundant types? Across 88 cell types in the four adaptive-panel
+datasets (three Tabula Sapiens tissues plus external lung), rare types
+match abundant types on overall rank ordering (Spearman 0.884 rare vs
+0.851 abundant, $p = 0.835$) but are significantly worse on the
+decision-relevant top-$k$ overlap measures: Jaccard 0.625 vs 0.731
+($p = 4.1 \times 10^{-3}$), null-separation AUC 0.520 vs 0.620
+($p = 5.3 \times 10^{-8}$), tail gap $-0.062$ vs $+0.082$
+($p = 1.5 \times 10^{-7}$). Under the pre-registered reliability gate
+(stability $\geq 0.75$, Jaccard $\geq 0.35$, primary AUC $\geq 0.65$,
+positive tail gap, cell count $\geq 80$), \textbf{0 of 22 rare cell
+types pass versus 4 of 22 abundant types}
+(Figure~\ref{fig:rare}A--B); under a dual-null formulation (minimum
+AUC across cell-permutation and gene-shuffle nulls), the gap
+attenuates but stays significant (AUC gap 0.018,
+$p = 6.8 \times 10^{-4}$).
+
+A 5{,}880-point threshold grid (5-D sweep over stability, Jaccard,
+AUC, tail gap, and cell count) confirms the headline is not
+threshold-driven: the abundant-$>$-rare gap direction holds at
+\emph{100\%} of grid points, the grid-mean gap is $+0.344$ (wider
+than $+0.182$ at primary thresholds), and rare pass rate is 0 at
+two-thirds of grid points (Supplementary Fig.~S4). Switching to a
+shared 36-edge TRRUST-intersected panel preserves the gap direction
+on immune and kidney (Spearman 0.93 and 0.87 for null-AUC ordering)
+but not lung (0.09); the shared ``primary'' panel
+(DoRothEA A/B $\cap$ TRRUST) on all five Tabula Sapiens cohorts also
+preserves it (0\% rare / 5.9\% intermediate / 9.1\% abundant;
+Supplementary Table~S3). Minimum reliable cell-size estimates under
+the adaptive-panel pipeline range from 287 (external lung,
+extrapolated) to 16{,}486 (lung, empirical), so some tissues require
+very large cell-type samples before mechanistic edges clear the
+reliability gate (Figure~\ref{fig:rare}C).
+
+\paragraph{Disease-cohort validation.}
+Delorey COVID lung (116{,}313 cells, 27 donors) presents a
+qualitatively different failure mode: across nine coarse compartments,
+rank stability is high (Spearman 0.85--0.89) and Jaccard reasonable
+(0.53--0.63), but null-separation AUC is uniformly weak (0.50--0.64),
+so \textbf{no cell type passes the gate in any rarity class} (0 of 3
+each). Disease-driven shared expression programmes (COVID-induced
+myeloid / fibroblast remodelling) plausibly compress the
+observed-vs-null gap; the gate was calibrated on Tabula Sapiens and
+may need disease-specific recalibration for heavily perturbed tissues.
+
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{figures/fig3_rare.pdf}
+\caption{\textbf{Rare-cell-type reliability and threshold sensitivity.}
+(A)~Scatter of null-separation AUC versus top-$k$ Jaccard for every
+eligible cell type, coloured by within-dataset rarity group (rare
+/ intermediate / abundant). Marker size scales with cell count.
+Dashed grey lines mark the primary-gate thresholds
+(AUC $\geq 0.65$, Jaccard $\geq 0.35$); points in the upper-right
+quadrant are candidates for passing. (B)~Primary-gate pass rates by
+rarity on the shared ``primary'' panel (fragility package output);
+numerators/denominators shown above each bar. (C)~Histogram of the
+abundant-minus-rare pass-rate gap across all 5{,}880 threshold
+combinations on the five-dimensional grid; the primary-threshold gap
+is marked in green and zero (no gap) in red. The gap direction is
+preserved at 100\% of grid points.}
+\label{fig:rare}
+\end{figure*}
+
+\subsection{Axis~4: Donor generalization improves monotonically; the
+required donor count depends on cells-per-donor balancing}
+
+Under the fixed-holdout protocol (two holdout donors held constant),
+immune-tissue transfer improves monotonically with training-donor count.
+At 300 cells/donor in the 20k-cell immune subset, Spearman $\rho$ rises
+0.568 $\to$ 0.683 from 2 to 10 training donors and top-100 overlap
+rises 0.445 $\to$ 0.540 (Figure~\ref{fig:donor}A). Expanding to the
+top-20 donors (long-tail inclusion) lowers all transfer metrics
+($\rho = 0.627$ at 16 donors vs 0.683 at 10 in the top-12 panel),
+showing that high-quality-donor restrictions paint an optimistic picture.
+The 90\%-of-best criterion recommends \textbf{6 training donors}; the
+95\%-of-best criterion recommends \textbf{8}. Under looser balancing
+(200 cells/donor, 13 eligible donors), the curve shifts and 90\%-of-best
+is met at 2 donors --- the requirement is therefore
+\emph{cells-per-donor dependent}, and the cells-per-donor policy must
+be pre-registered.
+
+Composition matching (3 shared cell classes, 62 cells/donor) lowers
+transfer by 16.3\% on Spearman (0.707 $\to$ 0.591) and 10.7\% on
+top-100 overlap (0.610 $\to$ 0.545; Figure~\ref{fig:donor}B): a
+substantial fraction of apparent donor generalisation reflects
+shared cell-type composition. Even under this strictest protocol the
+above-null signal remains large (lift@100 of 37.8--44.3$\times$),
+indicating real cross-donor regulatory signal beyond composition.
+
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/fig4_donor.pdf}
+\caption{\textbf{Donor generalization under fixed-holdout and composition control.}
+(A)~Immune transfer curves under fixed-holdout (holdout$= 2$) for top-12 and top-20
+donor panels. (B)~Composition-matched versus unmatched transfer in the top-8 panel.
+Error bands show interquartile range over 30--40 sampled splits.}
+\label{fig:donor}
+\end{figure*}
+
+\subsection{Axis~5: Integration method choice reorders rankings
+substantially and does not improve perturbation-grounded validity}
+
+Harmony integration produces moderate-to-large rank perturbations on
+all three tissues. On the full HVG-pair universe (unconstrained),
+Spearman corrected-vs-uncorrected ranges 0.757--0.823 with sign-flip
+rates 8.1--12.7\%. Panel-restricted (hematopoiesis $76 \times 108$):
+top-500 overlap 65--71\%, top-1{,}000 overlap 72--75\%, i.e.\
+29--35\% top-500 displacement (Figure~\ref{fig:integration}A) ---
+roughly a third of prioritised edges change depending on whether
+batch correction is applied. Yet rankings stay highly non-random:
+bounded-drift RSS between baseline and Harmony-integrated lists is
+0.26--0.30 across the eight (tissue $\times$ batch-key) combinations
+vs null mean $\approx 0.72$ ($|z| \geq 37$; empirical $p$ at floor).
+
+\paragraph{Integration method matters.}
+A cross-method comparison (Harmony vs scVI vs Scanorama, same
+cells, same panel, same random seed) reveals that method choice is
+not neutral (Table~\ref{tab:integration_methods}). Three regimes emerge:
+
+\begin{itemize}
+\item \textbf{Harmony} preserves rankings reasonably well across all
+      three tissues (Spearman 0.63--0.87, top-1{,}000 overlap
+      0.65--0.87, sign-flip 6--17\%).
+\item \textbf{scVI} sits in the middle: Spearman 0.36--0.57, top-1{,}000
+      overlap 0.48--0.74, sign-flip 18--30\%. Roughly a quarter of
+      edges change sign compared to the uncorrected baseline.
+\item \textbf{Scanorama} produces near-random rankings on kidney and
+      lung (Spearman $\approx 0$, top-1{,}000 overlap 0.11--0.14,
+      sign-flip 44--47\%; RSS at the rank-permutation null mean of
+      $\approx 0.72$) and weakly correlated rankings on immune
+      (Spearman 0.10, top-1{,}000 overlap 0.62, sign-flip 26\%).
+\end{itemize}
+
+In other words, switching integration method on the same data can
+cause anywhere from 6\% to 47\% of the top-500 edges to change sign,
+and can move the top-1{,}000 ranking to statistical indistinguishability
+from a random rewire of the baseline. Any GRN claim downstream of
+integration therefore depends materially on integration-method choice;
+we recommend reporting rank-stability metrics against the uncorrected
+baseline for every integration tool used.
+
+\begin{table*}[ht]
+\centering
+\caption{Cross-method integration perturbation of edge rankings.
+All rows: 1{,}200 cells, hematopoiesis $76 \times 108$ panel,
+Pearson scorer, same random seed. Top-1{,}000 overlap below $\sim 0.3$
+with RSS at the rank-permutation null mean $\approx 0.72$ indicates
+near-random rankings.}
+\label{tab:integration_methods}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+\textbf{Dataset} & \textbf{Method} & \textbf{Spearman} &
+\textbf{Overlap@500} & \textbf{Overlap@1k} &
+\textbf{Sign-flip} & \textbf{RSS@500} \\
+\midrule
+Kidney & Harmony    &  0.78 & 0.62 & 0.69 & 15\% & 0.38 \\
+Kidney & scVI       &  0.57 & 0.42 & 0.51 & 24\% & 0.51 \\
+Kidney & Scanorama  & -0.04 & 0.08 & 0.11 & 47\% & 0.76 \\
+Lung   & Harmony    &  0.63 & 0.59 & 0.65 & 17\% & 0.42 \\
+Lung   & scVI       &  0.36 & 0.42 & 0.48 & 30\% & 0.54 \\
+Lung   & Scanorama  & -0.02 & 0.08 & 0.14 & 44\% & 0.77 \\
+Immune & Harmony    &  0.87 & 0.81 & 0.87 &  6\% & 0.20 \\
+Immune & scVI       &  0.54 & 0.63 & 0.74 & 18\% & 0.37 \\
+Immune & Scanorama  &  0.10 & 0.32 & 0.62 & 26\% & 0.60 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{Do integrated rankings better recover reference edges?}
+Raw precision@500 shows nominal Harmony gains on DoRothEA and TRRUST
+in immune and kidney, but paired swap tests with BH-FDR correction
+restrict robust improvements to TRRUST on immune and kidney
+($\Delta$ precision $+0.026$ to $+0.028$, FDR $< 0.05$;
+Figure~\ref{fig:integration}B); DoRothEA and ChIP-seq--backed gains
+do not survive correction. Perturbation validation against
+Perturb-seq~\citep{Dixit2016, Replogle2022} returns small, negative top-500 swap
+deltas ($-0.002$ to $-0.004$, FDR $= 1.0$): edges \emph{gained} by
+integration are no more likely to be experimentally validated than
+edges \emph{lost}. Ranking perturbation does not translate into
+biological gain even for the best-behaved integrator. A
+$n_{\text{pcs}} \in \{30, 50, 80\}$ sweep reveals a tradeoff: top-500
+overlap with baseline rises monotonically with PCs (immune
+$0.590 \to 0.736$, more conservative integration), but DoRothEA
+precision peaks at intermediate PCs (Figure~\ref{fig:integration}C),
+so no single setting maximises both stability and reference agreement.
+
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{figures/fig5_integration.pdf}
+\caption{\textbf{Integration-method sensitivity.}
+(A)~Rank Spearman and sign-flip rate for Harmony variants (tissue
+$\times$ batch key combinations) against uncorrected baseline.
+(B)~Reference precision@500 deltas for Harmony-integrated vs
+uncorrected rankings, with paired swap-based binomial significance
+tests (filled bars: FDR $<0.05$ under Benjamini--Hochberg correction;
+unfilled: not significant). (C)~Cross-method comparison of three
+integration tools: Harmony (blue), scVI (orange), and Scanorama (red),
+on 1{,}200 cells from each tissue (Pearson scorer, hematopoiesis
+$76 \times 108$ panel). Dashed horizontal line at $\rho = 0$
+indicates rank-permutation null.}
+\label{fig:integration}
+\end{figure*}
+
+\subsection{Scorer divergence: within-scorer fragility does not transfer across scorer families}
+
+Scoring the hematopoiesis $76 \times 108$ panel on a shared 800-cell
+kidney sample with all five scorers reveals the pairwise agreement
+landscape (Table~\ref{tab:scorer_divergence},
+Figure~\ref{fig:scorer_divergence}). The two tree-ensemble scorers
+(GRNBoost2 and GENIE3) are near-identical (Spearman $\rho = 0.93$,
+top-500 Jaccard $= 0.54$); Pearson is moderately correlated with the
+tree scorers ($\rho \in [0.52, 0.56]$); mutual information is weakly
+correlated with Pearson ($\rho = 0.20$) and unrelated to the tree
+scorers ($\rho \leq 0.21$). Most importantly, \textbf{scGPT attention
+is uncorrelated with every classical scorer}: Spearman $\rho$ ranges
+$-0.05$ (vs Pearson) to $+0.20$ (vs MI), top-100 Jaccard 0.02--0.06,
+and the RSS composite 0.69--0.76 sits at or above the
+rank-permutation null mean ($\approx 0.72$). The Axes 1--5
+within-scorer fragility analysis is therefore orthogonal to
+across-scorer agreement: choosing a stable scorer does not guarantee
+another stable scorer will agree with it, and an analyst switching
+scorers must re-audit.
+
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/fig7_scorer_divergence.pdf}
+\caption{\textbf{Pairwise scorer agreement on kidney}
+(hematopoiesis $76 \times 108$ panel, $n = 800$ cells).
+Left: Spearman $\rho$. Centre: top-100 Jaccard. Right: top-500 RSS
+composite (null mean $\approx 0.72$, shown in darker red). scGPT
+attention is uncorrelated with every classical scorer (last row/column);
+GRNBoost2 and GENIE3 are nearly identical.}
+\label{fig:scorer_divergence}
+\end{figure*}
+
+\begin{table*}[ht]
+\centering
+\caption{Pairwise scorer-agreement matrix on kidney
+(76 TFs $\times$ 99 targets panel, $n = 800$ cells). All top-500 RSS
+values should be compared against the rank-permutation null mean of
+$\approx 0.72$: values far below null indicate concordant rankings,
+values near null indicate ranking independence.}
+\label{tab:scorer_divergence}
+\small
+\begin{tabular}{llrrrr}
+\toprule
+\textbf{Scorer A} & \textbf{Scorer B} & \textbf{Spearman} & \textbf{Top-100 J} & \textbf{Top-500 J} & \textbf{Top-500 RSS} \\
+\midrule
+Pearson & Mutual info        & 0.20  & 0.14 & 0.21 & 0.56 \\
+Pearson & GRNBoost2          & 0.56  & 0.25 & 0.32 & 0.47 \\
+Pearson & GENIE3             & 0.52  & 0.30 & 0.26 & 0.51 \\
+Pearson & scGPT attention    & $-$0.05 & 0.02 & 0.04 & \textbf{0.73} \\
+Mutual info & GRNBoost2      & 0.18  & 0.05 & 0.14 & 0.65 \\
+Mutual info & GENIE3         & 0.21  & 0.04 & 0.16 & 0.62 \\
+Mutual info & scGPT attention & 0.20 & 0.03 & 0.06 & \textbf{0.76} \\
+GRNBoost2 & GENIE3           & 0.93  & 0.58 & 0.54 & 0.29 \\
+GRNBoost2 & scGPT attention  & 0.07  & 0.06 & 0.06 & \textbf{0.69} \\
+GENIE3 & scGPT attention     & 0.09  & 0.05 & 0.05 & \textbf{0.70} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Cross-axis analysis}
+
+The five axes are not independent
+(Table~\ref{tab:fragility}, Figure~\ref{fig:crossaxis}). Three
+interactions matter for practice. First, Axis~1 and Axis~3 are
+mechanistically linked under scGPT attention: rare types ($<\!500$
+cells) operate below the scGPT MVCC of $\sim$3{,}000, partly
+explaining their 0\% reliability-gate passage; under Pearson and tree
+scorers (MVCC 200--500) the link is weaker, so the rare-vs-abundant
+gap is also driven by sparsity and lower null-separation in small
+subsamples. Second, the dual-null coarse recommendation from Axis~2
+indirectly aids Axis~4, since coarse clustering pools cell-type
+variation that would otherwise require per-donor composition matching.
+Third, Axis~5 operates upstream of every other axis by altering the
+correlation structure on which scores are computed, so integration
+choice is a latent confounder for cell-count, resolution, and rare-type
+calibrations. No dataset passes all five axes under their calibrated
+criteria in any single scorer family, no single corrective measure
+resolves all fragilities, and within-scorer fragility profiles do not
+transfer across scorer families: robustness must be demonstrated, not
+assumed, along each axis \emph{and} each scorer choice.
+
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/fig6_cross_axis.pdf}
+\caption{\textbf{Cross-axis fragility summary.}
+Heatmap showing pass (green), marginal (yellow), and fail (red) status for each
+axis--dataset combination under calibrated criteria.}
+\label{fig:crossaxis}
+\end{figure*}
+
+\begin{table*}[ht]
+\centering
+\caption{Per-axis robustness summary: calibrated criterion and practical recommendation.}
+\label{tab:fragility}
+\small
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+\toprule
+\textbf{Axis} & \textbf{Calibrated criterion} & \textbf{Recommendation} \\
+\midrule
+Cell count   & MVCC (top-1k Jaccard $>0.5$); scorer-dependent: 200 cells (Pearson / tree, 4 of 6 cohorts), 500 cells (Pearson, primary immune and Delorey COVID lung), $>$3{,}000 cells (scGPT attention, anchor-invariant) & Use the MVCC for your chosen scorer family; apply DoRothEA-constrained policies to rescue small-sample scGPT runs \\
+\addlinespace
+Resolution   & Dual-null pass: both global cell-label shuffle and within-coarse constrained shuffle must clear at empirical $p \leq 0.05$ & Default to coarse; report within-class RSS heterogeneity \\
+\addlinespace
+Rare types   & Reliability gate: stability $\geq 0.75$, top-$k$ Jaccard $\geq 0.35$, null AUC $\geq 0.65$, positive tail gap, cell count $\geq 80$ & Treat rare-cell-type edges as hypothesis-generating only \\
+\addlinespace
+Donor        & Fixed-holdout Spearman $\geq$ 90\% of best (300 cells/donor) & Collect $\geq 6$ donors (8 for conservative generalisation) \\
+\addlinespace
+Integration  & Paired-swap $\Delta$ precision against curated reference, BH-FDR $<0.05$ & Report multi-reference validation; avoid universal claims of biological gain \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+% ============================================================
+% 4. DISCUSSION
+% ============================================================
+\section{Discussion}
+
+This audit demonstrates that GRN edge rankings from single-cell data are fragile
+along multiple axes simultaneously, and that apparent robustness along one axis
+(e.g., coarse rank stability for rare types) can mask failure along another
+(e.g., null separation). The adversarial-review methodology that we applied to
+each axis is itself a contribution: by requiring corrective experiments before
+claims are updated, it systematically closes the gap between initial findings and
+defensible conclusions.
+
+\paragraph{Practical implications.}
+Table~\ref{tab:guidelines} provides concrete guidance: no single
+parameter choice can guarantee robust GRN inference; robustness must
+be demonstrated along each relevant axis for the specific tissue,
+cell count, and analytical choices at hand.
+
+\begin{table*}[ht]
+\centering
+\caption{Practical guidelines for robust GRN inference from single-cell data.}
+\label{tab:guidelines}
+\small
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Decision Point} & \textbf{Guideline} \\
+\midrule
+\textit{Sample size} &
+  Target $\geq 3{,}000$ cells under scGPT attention or use informative
+  prior constraints (DoRothEA / TRRUST) which stabilise scGPT rankings
+  at 200+ cells. Under Pearson, mutual-information, and tree-based
+  scorers, 200--500 cells are often sufficient on the cohorts tested;
+  verify per-scorer MVCC before committing. \\
+\addlinespace
+\textit{Clustering} &
+  Default to coarse clustering unless a dual-null calibration (global +
+  within-coarse constrained shuffle) confirms that fine resolution
+  adds separable signal; in our six cohorts, no coarse-vs-fine
+  configuration cleared both nulls, so every recommendation collapses
+  to coarse or hybrid. Report within-class RSS for compartment-level
+  uncertainty. \\
+\addlinespace
+\textit{Rare cell types} &
+  Report null-separation AUC alongside rank stability for every cell
+  type; a high Spearman stability can coexist with null-level AUC
+  (Delorey COVID cohort, §3.3). Flag rare types ($< 250$ cells) as
+  hypothesis-generating. Provide minimum-reliable-size estimates with
+  uncertainty status. \\
+\addlinespace
+\textit{Donor coverage} &
+  Collect $\geq 6$ donors under strict cells-per-donor balancing
+  (300 cells/donor, 8 donors for conservative generalisation); under
+  looser balancing (200 cells/donor), the requirement drops to 2--4
+  donors. State the cells-per-donor policy explicitly. Use
+  fixed-holdout evaluation, not complementary splits, and report
+  composition-controlled transfer alongside raw transfer. \\
+\addlinespace
+\textit{Integration} &
+  Run at least two integration methods on the same cells, not only the
+  tool that happens to be most popular in the pipeline: we observe
+  Spearman ranging from 0.06 (Scanorama on kidney) to 0.87 (Harmony
+  on immune) on identical inputs. Report at least paired swap
+  significance for reference gains, plus one perturbation-backed
+  metric when available, and include a hyperparameter-sensitivity
+  sweep. Avoid universal claims of biological improvement. \\
+\addlinespace
+\textit{Scorer choice} &
+  Auditing one scorer does not license conclusions about another: in
+  our kidney experiment, scGPT-attention rankings overlap with Pearson
+  rankings in fewer than 5\% of top-100 edges. Re-audit every axis
+  under the scorer used to generate the published rankings. \\
+\addlinespace
+\textit{Cross-axis audit} &
+  Report a fragility profile (Table~\ref{tab:fragility}) covering all
+  axes relevant to the study design. Acknowledge which axes were not
+  testable and why. \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\paragraph{Comparison to existing benchmarks.}
+Published GRN benchmarks~\citep{Pratapa2020, Chen2018} have focused primarily on
+accuracy relative to gold-standard references, treating preprocessing as fixed.
+Our audit complements these by asking whether rankings are \emph{stable} across
+realistic analytical perturbations, a necessary condition for practical utility.
+The two perspectives are not redundant: a method can be accurate under one
+configuration and fragile under perturbation, or robustly mediocre across all
+configurations.
+
+\paragraph{Limitations.}
+None of the five scorers directly estimate causal regulatory effects;
+correlation on normalized counts avoids zero-inflation
+artifacts~\citep{Svensson2020} but remains susceptible to confounding
+by shared upstream regulators~\citep{Kharchenko2014}, tree-ensemble
+scorers introduce their own biases, and scGPT attention reflects
+pretraining patterns on the CellxGene Census rather than causal edges.
+The audit covers four Tabula Sapiens tissues plus one external-lab
+SmartSeq2 lung cohort and one COVID-19 lung disease cohort;
+generalisation to other disease tissues, developmental atlases, and
+cross-species comparisons remains untested. The within-coarse null is
+demanding and other scoring families might clear it; the
+single-cell-DE literature documents how easily under-calibrated nulls
+inflate apparent
+discoveries~\citep{Squair2021}, supporting the within-coarse stringency
+we adopt. Perturbation-backed validation remains data-sparse, limiting
+swap-test power. Three integration methods are compared side-by-side
+(Harmony~\citep{Korsunsky2019}, scVI~\citep{Gayoso2022},
+Scanorama~\citep{Hie2019}); broader integration
+benchmarks~\citep{Luecken2022, Tran2020} and recent multimodal
+integration frameworks~\citep{Hao2024} suggest extending the
+cross-method comparison further is a natural next step.
+
+% ============================================================
+% 5. CONCLUSION
+% ============================================================
+\section{Conclusion}
+
+This systematic multi-scorer, multi-axis robustness audit of
+single-cell GRN inference --- five scorers, six cohorts, five axes
+(cell count, clustering resolution, rare-cell reliability, donor
+generalisation, integration sensitivity) --- finds fragility to be
+pervasive, axis-specific, interactive, and scorer-specific. No dataset
+passes all five axes under calibrated criteria in any scorer family;
+the within-coarse resolution null fails universally under dual- and
+triple-null calibrations; the rare-vs-abundant reliability gap holds
+across 5{,}880 threshold combinations; and scGPT attention rankings
+are statistically uncorrelated with classical-scorer rankings on the
+same cells. The accompanying \texttt{fragility} package reproduces
+every CSV and figure from raw h5ad via a single \texttt{make audit}
+command and is extensible to new scorers and datasets through a single
+interface; we encourage practitioners to conduct analogous audits
+before publishing GRN claims.
+
+% ============================================================
+% AUTHOR CONTRIBUTIONS
+% ============================================================
+\section*{Author Contributions}
+
+\textbf{Ihor Kendiukhov:} Conceptualization, Methodology, Software,
+Formal analysis, Investigation, Data curation, Writing -- original
+draft, Writing -- review \& editing, Visualization, Project administration.
+
+% ============================================================
+% ACKNOWLEDGEMENTS
+% ============================================================
+\section*{Acknowledgements}
+
+The author thanks the Tabula Sapiens Consortium and the authors of
+the Travaglini et al.\ 2020 lung atlas and the Delorey et al.\ 2021
+COVID-19 lung atlas for making their single-cell data publicly
+available, and the authors of scGPT and the DoRothEA / TRRUST
+databases for releasing their tools and references under open
+licences.
+
+% ============================================================
+% FUNDING
+% ============================================================
+\section*{Funding}
+
+This work was not supported by any specific grant from funding agencies in the
+public, commercial, or not-for-profit sectors. No external funding was received.
+
+% ============================================================
+% CONFLICT OF INTEREST
+% ============================================================
+\section*{Conflict of Interest}
+
+None declared.
+
+% ============================================================
+% DATA AND CODE AVAILABILITY
+% ============================================================
+\section*{Data and Code Availability}
+
+The unified \texttt{fragility} package (source code, analysis
+pipelines, null library, metric definitions, panel registry, scorer
+implementations, and figure-regeneration scripts) is publicly available
+at \url{https://github.com/Biodyn-AI/grn-robustness-audit} and a
+versioned archive of the code accompanying this submission is deposited
+on Zenodo at \url{https://doi.org/10.5281/zenodo.20009065}. A single
+\texttt{make audit} command reproduces every CSV and figure in this
+paper from raw h5ad input.
+
+Raw single-cell data are from the following public sources: Tabula
+Sapiens Consortium (\url{https://tabula-sapiens-portal.ds.czbiohub.org/});
+Travaglini et al.\ 2020 SmartSeq2 lung atlas (CellxGene); and
+Delorey et al.\ 2021 COVID-19 lung atlas (CellxGene dataset
+\texttt{75c059c8-8fb7-4e6e-a618-a3e01ac42060}).
+The scGPT \emph{whole-human} checkpoint is from
+\citet{Cui2024}; the DoRothEA and TRRUST panels are from
+\citet{GarciaAlonso2019} and \citet{Han2018} respectively.
+
+% ============================================================
+% SUPPLEMENTARY INFORMATION
+% ============================================================
+\section*{Supplementary Information}
+
+Supplementary Methods S1 contains the panel registry (gene lists for
+every named TF--target panel used in the paper) and extended
+preprocessing documentation. Supplementary Methods S2 describes the
+adversarial AI-assisted review protocol, including base model, prompt
+rubric, round-by-round logs, and the full-census 27-issue classification
+under the pre-registered rubric. Supplementary Figures S1--S7 cover,
+respectively: the full MVCC anchor ablation; the RSS weight-simplex
+sweep; the rank-permutation empirical null distribution; the
+5{,}880-point reliability-gate threshold-sensitivity heatmap; the
+top-$k$ scan over $k \in \{100, 500, 1{,}000, 5{,}000,$ 1\%, 5\%,
+10\%$\}$; the normalization ablation (depth / size-factor / Pearson
+residuals); and the triple-null calibration. Supplementary Table~S3
+reports Axis-3 per-cell-type reliability metrics under the shared
+primary panel for all Tabula Sapiens cohorts. All supplementary
+material is available at \textit{Bioinformatics} online and in the
+GitHub repository.
+
+% ============================================================
+% ABBREVIATIONS
+% ============================================================
+\section*{Abbreviations}
+
+\noindent
+AUC: Area Under the Curve;
+BH: Benjamini--Hochberg;
+FDR: False Discovery Rate;
+GRN: Gene Regulatory Network;
+MVCC: Minimum Valid Cell Count;
+PCA: Principal Component Analysis;
+RSS: Resolution Sensitivity Score;
+scRNA-seq: Single-Cell RNA Sequencing;
+TF: Transcription Factor.
+
+% ============================================================
+% REFERENCES
+% ============================================================
+\begin{thebibliography}{99}
+
+\bibitem[Aibar et~al., 2017]{Aibar2017}
+Aibar, S., Gonz{\'a}lez-Blas, C.~B., Moerman, T., et~al. (2017).
+\newblock SCENIC: single-cell regulatory network inference and clustering.
+\newblock \textit{Nature Methods}, 14(11):1083--1086.
+
+\bibitem[Benjamini and Hochberg, 1995]{BenjaminiHochberg1995}
+Benjamini, Y. and Hochberg, Y. (1995).
+\newblock Controlling the false discovery rate: a practical and powerful
+  approach to multiple testing.
+\newblock \textit{Journal of the Royal Statistical Society: Series B
+  (Methodological)}, 57(1):289--300.
+
+\bibitem[Chen and Mar, 2018]{Chen2018}
+Chen, S. and Mar, J.~C. (2018).
+\newblock Evaluating methods of inferring gene regulatory networks highlights
+  their lack of performance for single cell gene expression data.
+\newblock \textit{BMC Bioinformatics}, 19(1):232.
+
+\bibitem[Cui et~al., 2024]{Cui2024}
+Cui, H., Wang, C., Maan, H., et~al. (2024).
+\newblock scGPT: toward building a foundation model for single-cell multi-omics
+  using generative AI.
+\newblock \textit{Nature Methods}, 21(8):1470--1480.
+
+\bibitem[Delorey et~al., 2021]{Delorey2021}
+Delorey, T.~M., Ziegler, C.~G.~K., Heimberg, G., et~al. (2021).
+\newblock COVID-19 tissue atlases reveal SARS-CoV-2 pathology and cellular
+  targets.
+\newblock \textit{Nature}, 595(7865):107--113.
+
+\bibitem[Dixit et~al., 2016]{Dixit2016}
+Dixit, A., Parnas, O., Li, B., et~al. (2016).
+\newblock Perturb-Seq: dissecting molecular circuits with scalable single-cell
+  RNA profiling of pooled genetic screens.
+\newblock \textit{Cell}, 167(7):1853--1866.e17.
+
+\bibitem[Garcia-Alonso et~al., 2019]{GarciaAlonso2019}
+Garcia-Alonso, L., Holland, C.~H., Ibrahim, M.~M., Turei, D., and
+  Saez-Rodriguez, J. (2019).
+\newblock Benchmark and integration of resources for the estimation of human
+  transcription factor activities.
+\newblock \textit{Genome Research}, 29(8):1363--1375.
+
+\bibitem[Gayoso et~al., 2022]{Gayoso2022}
+Gayoso, A., Lopez, R., Xing, G., et~al. (2022).
+\newblock A Python library for probabilistic analysis of single-cell omics data.
+\newblock \textit{Nature Biotechnology}, 40(2):163--166.
+
+\bibitem[Haghverdi et~al., 2018]{Haghverdi2018}
+Haghverdi, L., Lun, A.~T.~L., Morgan, M.~D., and Marioni, J.~C. (2018).
+\newblock Batch effects in single-cell RNA-sequencing data are corrected by
+  matching mutual nearest neighbors.
+\newblock \textit{Nature Biotechnology}, 36(5):421--427.
+
+\bibitem[Han et~al., 2018]{Han2018}
+Han, H., Cho, J.-W., Lee, S., et~al. (2018).
+\newblock TRRUST v2: an expanded reference database of human and mouse
+  transcriptional regulatory interactions.
+\newblock \textit{Nucleic Acids Research}, 46(D1):D380--D386.
+
+\bibitem[Hao et~al., 2024]{Hao2024}
+Hao, Y., Stuart, T., Kowalski, M.~H., et~al. (2024).
+\newblock Dictionary learning for integrative, multimodal and scalable
+  single-cell analysis.
+\newblock \textit{Nature Biotechnology}, 42(2):293--304.
+
+\bibitem[Heumos et~al., 2023]{Heumos2023}
+Heumos, L., Schaar, A.~C., Lance, C., et~al. (2023).
+\newblock Best practices for single-cell analysis across modalities.
+\newblock \textit{Nature Reviews Genetics}, 24(8):550--572.
+
+\bibitem[Hie et~al., 2019]{Hie2019}
+Hie, B., Bryson, B., and Berger, B. (2019).
+\newblock Efficient integration of heterogeneous single-cell transcriptomes
+  using Scanorama.
+\newblock \textit{Nature Biotechnology}, 37(6):685--691.
+
+\bibitem[Huynh-Thu et~al., 2010]{Huynh-Thu2010}
+Huynh-Thu, V.~A., Irrthum, A., Wehenkel, L., and Geurts, P. (2010).
+\newblock Inferring regulatory networks from expression data using tree-based
+  methods.
+\newblock \textit{PLoS ONE}, 5(9):e12776.
+
+\bibitem[Kharchenko et~al., 2014]{Kharchenko2014}
+Kharchenko, P.~V., Silberstein, L., and Scadden, D.~T. (2014).
+\newblock Bayesian approach to single-cell differential expression analysis.
+\newblock \textit{Nature Methods}, 11(7):740--742.
+
+\bibitem[Korsunsky et~al., 2019]{Korsunsky2019}
+Korsunsky, I., Millard, N., Fan, J., et~al. (2019).
+\newblock Fast, sensitive and accurate integration of single-cell data with
+  Harmony.
+\newblock \textit{Nature Methods}, 16(12):1289--1296.
+
+\bibitem[Kraskov et~al., 2004]{Kraskov2004}
+Kraskov, A., St{\"o}gbauer, H., and Grassberger, P. (2004).
+\newblock Estimating mutual information.
+\newblock \textit{Physical Review E}, 69(6):066138.
+
+\bibitem[Lause et~al., 2021]{Lause2021}
+Lause, J., Berens, P., and Kobak, D. (2021).
+\newblock Analytic Pearson residuals for normalization of single-cell RNA-seq
+  UMI data.
+\newblock \textit{Genome Biology}, 22(1):258.
+
+\bibitem[Luecken and Theis, 2019]{Luecken2019}
+Luecken, M.~D. and Theis, F.~J. (2019).
+\newblock Current best practices in single-cell RNA-seq analysis: a tutorial.
+\newblock \textit{Molecular Systems Biology}, 15(6):e8746.
+
+\bibitem[Luecken et~al., 2022]{Luecken2022}
+Luecken, M.~D., B{\"u}ttner, M., Chaichoompu, K., et~al. (2022).
+\newblock Benchmarking atlas-level data integration in single-cell genomics.
+\newblock \textit{Nature Methods}, 19(1):41--50.
+
+\bibitem[Margolin et~al., 2006]{Margolin2006}
+Margolin, A.~A., Nemenman, I., Basso, K., et~al. (2006).
+\newblock ARACNE: an algorithm for the reconstruction of gene regulatory
+  networks in a mammalian cellular context.
+\newblock \textit{BMC Bioinformatics}, 7(Suppl 1):S7.
+
+\bibitem[Moerman et~al., 2019]{Moerman2019}
+Moerman, T., Aibar Santos, S., Bravo Gonz{\'a}lez-Blas, C., et~al. (2019).
+\newblock GRNBoost2 and Arboreto: efficient and scalable inference of gene
+  regulatory networks.
+\newblock \textit{Bioinformatics}, 35(12):2159--2161.
+
+\bibitem[Pedregosa et~al., 2011]{Pedregosa2011}
+Pedregosa, F., Varoquaux, G., Gramfort, A., et~al. (2011).
+\newblock Scikit-learn: machine learning in Python.
+\newblock \textit{Journal of Machine Learning Research}, 12:2825--2830.
+
+\bibitem[Pola{\'n}ski et~al., 2020]{Polanski2020}
+Pola{\'n}ski, K., Young, M.~D., Miao, Z., Meyer, K.~B., Teichmann, S.~A., and
+  Park, J.-E. (2020).
+\newblock BBKNN: fast batch alignment of single cell transcriptomes.
+\newblock \textit{Bioinformatics}, 36(3):964--965.
+
+\bibitem[Pratapa et~al., 2020]{Pratapa2020}
+Pratapa, A., Jalihal, A.~P., Law, J.~N., Bharadwaj, A., and Murali, T.~M.
+  (2020).
+\newblock Benchmarking algorithms for gene regulatory network inference from
+  single-cell transcriptomic data.
+\newblock \textit{Nature Methods}, 17(2):147--154.
+
+\bibitem[Replogle et~al., 2022]{Replogle2022}
+Replogle, J.~M., Saunders, R.~A., Pogson, A.~N., et~al. (2022).
+\newblock Mapping information-rich genotype--phenotype landscapes with
+  genome-scale Perturb-seq.
+\newblock \textit{Cell}, 185(14):2559--2575.e28.
+
+\bibitem[Squair et~al., 2021]{Squair2021}
+Squair, J.~W., Gautier, M., Kathe, C., et~al. (2021).
+\newblock Confronting false discoveries in single-cell differential expression.
+\newblock \textit{Nature Communications}, 12(1):5692.
+
+\bibitem[Stuart et~al., 2019]{Stuart2019}
+Stuart, T., Butler, A., Hoffman, P., et~al. (2019).
+\newblock Comprehensive integration of single-cell data.
+\newblock \textit{Cell}, 177(7):1888--1902.e21.
+
+\bibitem[Svensson, 2020]{Svensson2020}
+Svensson, V. (2020).
+\newblock Droplet scRNA-seq is not zero-inflated.
+\newblock \textit{Nature Biotechnology}, 38(2):147--150.
+
+\bibitem[{The Tabula Sapiens Consortium}, 2022]{TabulaSapiens2022}
+{The Tabula Sapiens Consortium}. (2022).
+\newblock The Tabula Sapiens: a multiple-organ, single-cell transcriptomic
+  atlas of humans.
+\newblock \textit{Science}, 376(6594):eabl4896.
+
+\bibitem[Theodoris et~al., 2023]{Theodoris2023}
+Theodoris, C.~V., Xiao, L., Chopra, A., et~al. (2023).
+\newblock Transfer learning enables predictions in network biology.
+\newblock \textit{Nature}, 618(7965):616--624.
+
+\bibitem[Traag et~al., 2019]{Traag2019}
+Traag, V.~A., Waltman, L., and van Eck, N.~J. (2019).
+\newblock From Louvain to Leiden: guaranteeing well-connected communities.
+\newblock \textit{Scientific Reports}, 9(1):5233.
+
+\bibitem[Tran et~al., 2020]{Tran2020}
+Tran, H.~T.~N., Ang, K.~S., Chevrier, M., et~al. (2020).
+\newblock A benchmark of batch-effect correction methods for single-cell RNA
+  sequencing data.
+\newblock \textit{Genome Biology}, 21(1):12.
+
+\bibitem[Travaglini et~al., 2020]{Travaglini2020}
+Travaglini, K.~J., Nabhan, A.~N., Penland, L., et~al. (2020).
+\newblock A molecular cell atlas of the human lung from single-cell RNA
+  sequencing.
+\newblock \textit{Nature}, 587(7835):619--625.
+
+\bibitem[Wolf et~al., 2018]{Wolf2018}
+Wolf, F.~A., Angerer, P., and Theis, F.~J. (2018).
+\newblock SCANPY: large-scale single-cell gene expression data analysis.
+\newblock \textit{Genome Biology}, 19(1):15.
+
+\end{thebibliography}
+
+
+\end{document}
