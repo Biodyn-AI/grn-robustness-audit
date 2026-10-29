@@ -1,0 +1,169 @@
+{
+  "kidney_source": {
+    "citation": "Publication: https://doi.org/10.1126/science.abl4896 Dataset Version: https://datasets.cellxgene.cziscience.com/65ca6e36-73b0-4c88-b0f3-7b23b48844ad.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/e5f58829-1a66-40b5-a624-9046778e74f5",
+    "uns_keys": [
+      "_scvi_manager_uuid",
+      "_scvi_uuid",
+      "_training_mode",
+      "assay_ontology_term_id_colors",
+      "citation",
+      "compartment_colors",
+      "donor_id_colors",
+      "leiden",
+      "method_colors",
+      "neighbors",
+      "organism",
+      "organism_ontology_term_id",
+      "pca",
+      "schema_reference",
+      "schema_version",
+      "sex_ontology_term_id_colors",
+      "tissue_in_publication_colors",
+      "title",
+      "umap"
+    ]
+  },
+  "external_lung_source": {
+    "citation": "Publication: https://doi.org/10.1038/s41586-020-2922-4 Dataset Version: https://datasets.cellxgene.cziscience.com/c88e0403-da93-40f4-99b5-f5fdeb81a82c.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/5d445965-6f1a-4b68-ba3a-b8f765155d3a",
+    "uns_keys": [
+      "cell_type_ontology_term_id_colors",
+      "citation",
+      "default_embedding",
+      "organism",
+      "organism_ontology_term_id",
+      "schema_reference",
+      "schema_version",
+      "title"
+    ]
+  },
+  "kidney": {
+    "citation": "Publication: https://doi.org/10.1126/science.abl4896 Dataset Version: https://datasets.cellxgene.cziscience.com/65ca6e36-73b0-4c88-b0f3-7b23b48844ad.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/e5f58829-1a66-40b5-a624-9046778e74f5",
+    "uns_keys": [
+      "_scvi_manager_uuid",
+      "_scvi_uuid",
+      "_training_mode",
+      "assay_ontology_term_id_colors",
+      "citation",
+      "compartment_colors",
+      "donor_id_colors",
+      "hvg",
+      "leiden",
+      "log1p",
+      "method_colors",
+      "neighbors",
+      "organism",
+      "organism_ontology_term_id",
+      "pca",
+      "schema_reference",
+      "schema_version",
+      "sex_ontology_term_id_colors",
+      "tissue_in_publication_colors",
+      "title",
+      "umap"
+    ]
+  },
+  "lung": {
+    "citation": "Publication: https://doi.org/10.1126/science.abl4896 Dataset Version: https://datasets.cellxgene.cziscience.com/40f8b1a3-9f76-4ac4-8761-32078555ed4e.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/e5f58829-1a66-40b5-a624-9046778e74f5",
+    "uns_keys": [
+      "_scvi_manager_uuid",
+      "_scvi_uuid",
+      "_training_mode",
+      "assay_ontology_term_id_colors",
+      "citation",
+      "compartment_colors",
+      "donor_id_colors",
+      "hvg",
+      "leiden",
+      "log1p",
+      "method_colors",
+      "neighbors",
+      "organism",
+      "organism_ontology_term_id",
+      "pca",
+      "schema_reference",
+      "schema_version",
+      "sex_ontology_term_id_colors",
+      "tissue_in_publication_colors",
+      "title",
+      "umap"
+    ]
+  },
+  "immune_invariant": {
+    "citation": "Publication: https://doi.org/10.1126/science.abl4896 Dataset Version: https://datasets.cellxgene.cziscience.com/e62b0182-368f-4875-8ac1-f49e3d5eda60.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/e5f58829-1a66-40b5-a624-9046778e74f5",
+    "uns_keys": [
+      "_scvi_manager_uuid",
+      "_scvi_uuid",
+      "_training_mode",
+      "assay_ontology_term_id_colors",
+      "citation",
+      "compartment_colors",
+      "donor_id_colors",
+      "hvg",
+      "leiden",
+      "log1p",
+      "method_colors",
+      "neighbors",
+      "organism",
+      "organism_ontology_term_id",
+      "pca",
+      "schema_reference",
+      "schema_version",
+      "sex_ontology_term_id_colors",
+      "tissue_in_publication_colors",
+      "title",
+      "umap"
+    ]
+  },
+  "immune": {
+    "citation": "Publication: https://doi.org/10.1126/science.abl4896 Dataset Version: https://datasets.cellxgene.cziscience.com/e62b0182-368f-4875-8ac1-f49e3d5eda60.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/e5f58829-1a66-40b5-a624-9046778e74f5",
+    "uns_keys": [
+      "_scvi_manager_uuid",
+      "_scvi_uuid",
+      "_training_mode",
+      "assay_ontology_term_id_colors",
+      "citation",
+      "compartment_colors",
+      "donor_id_colors",
+      "hvg",
+      "leiden",
+      "log1p",
+      "method_colors",
+      "neighbors",
+      "organism",
+      "organism_ontology_term_id",
+      "pca",
+      "schema_reference",
+      "schema_version",
+      "sex_ontology_term_id_colors",
+      "tissue_in_publication_colors",
+      "title",
+      "umap"
+    ]
+  },
+  "external_lung": {
+    "citation": "Publication: https://doi.org/10.1038/s41586-020-2922-4 Dataset Version: https://datasets.cellxgene.cziscience.com/c88e0403-da93-40f4-99b5-f5fdeb81a82c.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/5d445965-6f1a-4b68-ba3a-b8f765155d3a",
+    "uns_keys": [
+      "cell_type_ontology_term_id_colors",
+      "citation",
+      "default_embedding",
+      "hvg",
+      "log1p",
+      "organism",
+      "organism_ontology_term_id",
+      "schema_reference",
+      "schema_version",
+      "title"
+    ]
+  },
+  "delorey_covid_lung": {
+    "citation": "Publication: https://doi.org/10.1038/s41586-021-03569-1 Dataset Version: https://datasets.cellxgene.cziscience.com/75c059c8-8fb7-4e6e-a618-a3e01ac42060.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/e4c9ed14-e560-4900-a3bf-b0f8d2ce6a10",
+    "uns_keys": [
+      "citation",
+      "organism",
+      "organism_ontology_term_id",
+      "schema_reference",
+      "schema_version",
+      "title"
+    ]
+  }
+}

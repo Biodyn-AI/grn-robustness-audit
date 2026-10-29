@@ -1,0 +1,118 @@
+project:
+  name: scgpt-mechinterp-immune-hpn-scaled
+  seed: 42
+
+paths:
+  scgpt_repo: external/scGPT
+  scgpt_checkpoint: external/scGPT_checkpoints/whole-human/best_model.pt
+  scgpt_vocab: external/scGPT_checkpoints/whole-human/vocab.json
+  tabula_sapiens_h5ad: data/raw/tabula_sapiens_immune_subset_20000.h5ad
+  gene_info_csv: external/gene_info.csv
+  hgnc_alias_tsv: external/hgnc_complete_set.txt
+  processed_h5ad: outputs/tabula_sapiens_immune_subset_hpn_scaled_processed.h5ad
+  attention_scores: outputs/attention_scores_immune_hpn_scaled.npy
+  attention_counts: outputs/attention_counts_immune_hpn_scaled.npy
+  network_edges: outputs/inferred_edges_immune_hpn_scaled.tsv
+  dorothea_tsv: external/networks/trrust_human.tsv
+
+preprocess:
+  min_genes: 200
+  min_cells: 3
+  normalize_total: 10000
+  log1p: true
+  hvg: 5000
+  retain_gene_symbols:
+    - ACACA
+    - AHSA1
+    - AKT1
+    - AKT1S1
+    - AMH
+    - BAD
+    - CBX2
+    - CHEK1
+    - CHEK2
+    - CTNNB1
+    - DCTN6
+    - DHH
+    - DKK1
+    - DMRT1
+    - EGFR
+    - EIF4EBP1
+    - ERBB2
+    - ERBB3
+    - ESR1
+    - FGF9
+    - FOXL2
+    - FOXO3
+    - GATA4
+    - GSK3A
+    - GSK3B
+    - JUN
+    - MAP2K1
+    - MAPK1
+    - MAPK3
+    - MAPK8
+    - MET
+    - MTOR
+    - NDRG1
+    - NR0B1
+    - NR5A1
+    - PDK1
+    - PEA15
+    - WT1
+    - PRKAA2
+    - PRKCA
+    - PRKCB
+    - PRKCD
+    - PSMC4
+    - RAF1
+    - RB1
+    - RELA
+    - RICTOR
+    - RPS6KA1
+    - RPS6KB1
+    - RSPO1
+    - SOX9
+    - SRC
+    - SRY
+    - STAT3
+    - TAZ
+    - WNT4
+    - YBX1
+    - YY1AP1
+
+scgpt_dataset:
+  max_genes: 1200
+  include_zero: false
+  sort_by_expression: true
+  pad_token_id: null
+  cls_token_id: null
+
+model:
+  entrypoint: scgpt.model.TransformerModel
+  model_args: {}
+  prefix_to_strip: null
+  forward_key_map:
+    gene_ids: src
+    gene_values: values
+    src_key_padding_mask: src_key_padding_mask
+
+attention:
+  reduce_layers: true
+  reduce_heads: true
+  max_cells: 400
+  sample_strategy: random
+  sample_seed: 42
+
+network:
+  threshold_percentile: 95
+  top_k: 50
+  candidate_sources_from_dorothea: false
+  candidate_targets_from_dorothea: false
+
+evaluation:
+  dorothea_confidence:
+    - A
+    - B
+    - C
+    - D

@@ -1,0 +1,86 @@
+project:
+  name: scgpt-mechinterp-invariant-causal-immune
+  seed: 42
+
+paths:
+  scgpt_repo: external/scGPT
+  scgpt_checkpoint: external/scGPT_checkpoints/whole-human/best_model.pt
+  scgpt_vocab: external/scGPT_checkpoints/whole-human/vocab.json
+  tabula_sapiens_h5ad: data/raw/tabula_sapiens_immune_subset_20000.h5ad
+  gene_info_csv: external/gene_info.csv
+  hgnc_alias_tsv: external/hgnc_complete_set.txt
+  processed_h5ad: outputs/invariant_causal_edges/immune/processed.h5ad
+  dorothea_tsv: external/networks/trrust_human.tsv
+  attention_scores: outputs/invariant_causal_edges/immune/attention_scores.npy
+  attention_counts: outputs/invariant_causal_edges/immune/attention_counts.npy
+  causal_output_dir: outputs/invariant_causal_edges/immune/causal
+
+preprocess:
+  min_genes: 200
+  min_cells: 3
+  normalize_total: 10000
+  log1p: true
+  hvg: 3000
+  max_cells: 15000
+  retain_gene_symbols_path: invariant_reference_gene_symbols_ab.txt
+
+scgpt_dataset:
+  max_genes: 900
+  include_zero: false
+  sort_by_expression: true
+  pad_token_id: null
+  cls_token_id: null
+
+model:
+  entrypoint: scgpt.model.TransformerModel
+  model_args: {}
+  prefix_to_strip: null
+  forward_key_map:
+    gene_ids: src
+    gene_values: values
+    src_key_padding_mask: src_key_padding_mask
+
+attention:
+  reduce_layers: true
+  reduce_heads: true
+  max_cells: 180
+  sample_strategy: random
+  sample_seed: 44
+
+evaluation:
+  dorothea_confidence:
+    - A
+    - B
+    - C
+    - D
+
+causal_intervention:
+  output_dir: outputs/invariant_causal_edges/immune/causal
+  max_cells: 180
+  cell_sample_mode: random
+  cell_sample_seed: 44
+  batch_size: 1
+  disable_fast_transformer: true
+  torch_num_threads: 1
+  torch_num_interop_threads: 1
+  resume: true
+  checkpoint_path: outputs/invariant_causal_edges/immune/causal/checkpoint.json
+  checkpoint_every_pairs: 20
+  progress_every_pairs: 20
+  interventions:
+    - ablation
+  ablation_mode: value
+  baseline_value: 0.0
+  output_key: null
+  output_reduce: mean
+  pairs_path: configs/invariant_causal_pairs.tsv
+  random_control_pairs: 80
+  max_cells_per_pair: 8
+  random_seed: 42
+  primary_intervention: ablation
+  score_mode: abs
+  tracing:
+    enabled: false
+    patch_position: source
+    normalize_restoration: true
+    max_pairs: 0

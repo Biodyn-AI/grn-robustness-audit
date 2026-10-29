@@ -1,0 +1,119 @@
+project:
+  name: scgpt-probe-benchmark
+  seed: 43
+paths:
+  scgpt_repo: external/scGPT
+  scgpt_checkpoint: external/scGPT_checkpoints/whole-human/best_model.pt
+  scgpt_vocab: external/scGPT_checkpoints/whole-human/vocab.json
+  tabula_sapiens_h5ad: data/raw/tabula_sapiens_kidney.h5ad
+  gene_info_csv: external/gene_info.csv
+  hgnc_alias_tsv: external/hgnc_complete_set.txt
+  processed_h5ad: outputs/tabula_sapiens_processed.h5ad
+  dorothea_tsv: external/networks/trrust_human.tsv
+  probe_output_dir: outputs/probe_benchmark/research_grade/seed_43
+  probe_matrices_dir: outputs/probe_benchmark/research_grade/seed_43/matrices
+  probe_edges_dir: outputs/probe_benchmark/research_grade/seed_43/edges
+  probe_metrics_csv: outputs/probe_benchmark/research_grade/seed_43/probe_metrics.csv
+  probe_agreement_tsv: outputs/probe_benchmark/research_grade/seed_43/probe_agreement.tsv
+  probe_recommendations_md: outputs/probe_benchmark/research_grade/seed_43/recommendations.md
+preprocess:
+  min_genes: 200
+  min_cells: 3
+  normalize_total: 10000
+  log1p: true
+  hvg: 5000
+scgpt_dataset:
+  max_genes: 1200
+  include_zero: false
+  sort_by_expression: true
+  pad_token_id: null
+  cls_token_id: null
+model:
+  entrypoint: scgpt.model.TransformerModel
+  model_args: {}
+  prefix_to_strip: null
+  forward_key_map:
+    gene_ids: src
+    gene_values: values
+    src_key_padding_mask: src_key_padding_mask
+attention:
+  reduce_layers: true
+  reduce_heads: true
+  max_cells: null
+network:
+  threshold_percentile: 95
+  top_k: 50
+evaluation:
+  dorothea_confidence:
+  - A
+  - B
+  - C
+  - D
+probe_benchmark:
+  probes:
+  - attention
+  - grad_input
+  - integrated_gradients
+  - perturbation
+  output_key: mlm_output
+  output_reduce: none
+  batch_size: 1
+  max_cells: 30
+  target_top_k: 8
+  source_top_k: 16
+  target_selection: output
+  source_selection: expression
+  selection_use_abs: false
+  baseline_value: 0.0
+  baseline_use_abs: true
+  ig_steps: 5
+  normalization: rank
+  normalization_axis: source
+  use_abs: false
+  evaluation_top_k: 1000
+  agreement_top_k: 1000
+  candidate_sources_path: outputs/probe_benchmark/candidate_sources_union.txt
+  candidate_targets_path: outputs/probe_benchmark/candidate_targets_union.txt
+  consensus_probes:
+    - attention
+    - grad_input
+    - integrated_gradients
+    - perturbation
+  threshold_sweep:
+    top_k_values:
+    - 25
+    - 50
+    - 100
+    - 200
+    percentile_values:
+    - 90
+    - 95
+    - 97
+    - 99
+    mask_modes:
+    - masked
+    - unmasked
+  references:
+  - name: trrust
+    path: external/networks/trrust_human.tsv
+    confidence_levels:
+    - A
+    - B
+    - C
+    - D
+  - name: dorothea
+    path: external/networks/dorothea_human.tsv
+    confidence_levels:
+    - A
+    - B
+    - C
+    - D
+  - name: dorothea_chipseq
+    path: external/networks/dorothea_chipseq_human.tsv
+    confidence_levels:
+    - A
+    - B
+    - C
+    - D
+  sample_cells: random
+  sample_seed: 43

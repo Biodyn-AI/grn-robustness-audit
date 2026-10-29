@@ -1,0 +1,72 @@
+{
+  "args": {
+    "MVC": true,
+    "USE_CCE": false,
+    "USE_CLS": false,
+    "USE_GENERATIVE_TRAINING": true,
+    "batch_size": 32,
+    "d_hid": 512,
+    "data_source": "/scratch/ssd004/datasets/cellxgene/scb_strict/human",
+    "dist_backend": "nccl",
+    "dist_url": "tcp://gpu188.cluster.local:53833",
+    "distributed": true,
+    "dropout": 0.2,
+    "embsize": 512,
+    "epochs": 6,
+    "eval_batch_size": 64,
+    "fast_transformer": true,
+    "fp16": true,
+    "gpu": 0,
+    "grad_accu_steps": 1,
+    "input_emb_style": "continuous",
+    "input_style": "binned",
+    "load_model": null,
+    "local_rank": 0,
+    "log_interval": 9000,
+    "lr": 0.0001,
+    "mask_ratio": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "mask_value": -1,
+    "max_seq_len": 1200,
+    "n_bins": 51,
+    "n_hvg": null,
+    "n_layers_cls": 3,
+    "nheads": 8,
+    "nlayers": 12,
+    "no_cce": true,
+    "no_cls": true,
+    "pad_token": "<pad>",
+    "pad_value": -2,
+    "rank": 0,
+    "save_dir": "/scratch/ssd004/datasets/cellxgene/save/cellxgene_census_human-May23-08-36-2023",
+    "save_interval": 27000,
+    "scheduler_factor": 0.99,
+    "scheduler_interval": 100,
+    "training_tasks": "both",
+    "trunc_by_sample": true,
+    "valid_size_or_ratio": 0.003,
+    "vocab_path": "/scratch/ssd004/datasets/cellxgene/scFormer/scformer/tokenizer/default_census_vocab.json",
+    "warmup_ratio_or_step": 10000.0,
+    "world_size": 16
+  },
+  "diagnostics": {
+    "missing": [
+      "cls_decoder._decoder.0.weight",
+      "cls_decoder._decoder.0.bias",
+      "cls_decoder._decoder.2.weight",
+      "cls_decoder._decoder.2.bias",
+      "cls_decoder._decoder.3.weight",
+      "cls_decoder._decoder.3.bias",
+      "cls_decoder._decoder.5.weight",
+      "cls_decoder._decoder.5.bias",
+      "cls_decoder.out_layer.weight",
+      "cls_decoder.out_layer.bias"
+    ],
+    "unexpected": [
+      "flag_encoder.weight"
+    ]
+  }
+}

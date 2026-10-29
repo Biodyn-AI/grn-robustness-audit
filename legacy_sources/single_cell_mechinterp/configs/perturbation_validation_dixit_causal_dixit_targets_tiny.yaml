@@ -1,0 +1,22 @@
+project:
+  name: scgpt-mechinterp-perturbation-dixit-causal-dixit-targets-tiny
+  seed: 42
+
+paths:
+  causal_scores: outputs/causal_dixit_targets_tiny/causal_scores.tsv
+  perturbation_h5ad: data/perturb/dixit/perturb_processed_symbols.h5ad
+  hgnc_alias_tsv: external/hgnc_complete_set.txt
+  output_dir: outputs/perturb_validation/dixit_causal_dixit_targets_tiny
+
+perturbation_validation:
+  obs_key: condition
+  control_labels:
+    - control
+  delimiter: "+"
+  allow_multi: false
+  min_cells: 20
+  top_k_targets: 50
+  min_abs_delta: 0.0
+  use_abs: true
+  exclude_self: true
+  score_mode: abs

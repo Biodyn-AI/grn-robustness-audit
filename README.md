@@ -4,13 +4,13 @@ This repository contains the data, analysis scripts, and manuscript for a system
 
 **Paper:** *Five Axes of Fragility: A Systematic Robustness Audit of Gene-Regulatory-Network Inference from Single-Cell Foundation Models*
 **Author:** Ihor Kendiukhov ([ORCID](https://orcid.org/0000-0001-5342-1499))
-**Target venue:** *Bioinformatics* (Oxford University Press)
+**Manuscript:** PLOS ONE submission PONE-D-26-36217
 
 ## Key Findings
 
 | Axis | Key Metric | Finding |
 |------|-----------|---------|
-| **Cell count** | MVCC > 3,000 | Unconstrained rankings require >3,000 cells for stability; prior constraints (DoRothEA/TRRUST) rescue small samples |
+| **Cell count** | MVCC > 3,000 | Frozen scGPT attention exceeds 3,000 tested cells; Pearson reaches 200–500 in the retained curves; prior constraints alter the search space |
 | **Resolution** | Dual-null calibration | All five datasets default to coarse clustering after dual-null calibration |
 | **Rare types** | Reliability gate | 0% of rare cell types pass the reliability gate vs 18% of abundant types |
 | **Donor** | Fixed-holdout Spearman | 6-8 donors needed for immune-tissue generalization; composition explains ~16% of transfer |
@@ -37,7 +37,7 @@ grn-robustness-audit/
     configs/                     YAML configs for axis runs and work packages
     scripts/                     End-to-end pipeline drivers
     tests/                       Unit tests
-    Makefile                     `make audit` regenerates every CSV and figure
+    Makefile                     Legacy analysis targets (see implementation README)
     pyproject.toml               Installable package definition
   paper/                         LaTeX manuscript, figures, and revision artifacts
     main.tex                     Main paper
@@ -53,11 +53,36 @@ grn-robustness-audit/
   LICENSE                        MIT License
 ```
 
-## Reproducing the Figures and Paper
+## Reproduction and provenance
+
+The verified portable path works from deposited numerical results. The matched-method
+control additionally retains its exact 200-cell matrix and all five score vectors
+under biological_context/matched_method/. It checks hashes,
+restores original tables, recomputes Pearson MVCC summaries, and redraws seven main
+plus seven supplementary figures. It does not regenerate experimental single-cell
+measurements or re-run scGPT, integrations, subsampling, or null permutations.
+
+```bash
+python3 scripts/reproduce_supporting_results.py --verify-only
+python3 scripts/reproduce_supporting_results.py --out reproduced
+python3 -m pip install -r requirements.txt
+python3 scripts/reproduce_supporting_results.py --out reproduced --figures
+python3 biological_context/summarize_tissue_context.py
+python3 -m unittest discover -s tests -v
+python3 -m unittest discover -s biological_context/tests -v
+```
+
+See [the numerical-results inventory](data/supporting_results/README.md),
+[original analysis sources](legacy_sources/README.md), and the
+[analysis-source limitations](implementation/README.md). The original public
+`release1` snapshot is archived at [Zenodo](https://doi.org/10.5281/zenodo.20009065);
+that historical DOI version does not include later supporting-data additions.
+
+## Legacy figure and paper build
 
 ### Prerequisites
 
-- Python 3.9+
+- Python 3.9+ (the separate analysis package requires Python 3.10+)
 - A LaTeX distribution (e.g. TeX Live, MacTeX)
 
 ### Quick Start
@@ -70,7 +95,7 @@ cd grn-robustness-audit
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Reproduce everything: panels, figures, and paper
+# Rebuild the original figure-only paper layout from retained source panels
 make all
 ```
 

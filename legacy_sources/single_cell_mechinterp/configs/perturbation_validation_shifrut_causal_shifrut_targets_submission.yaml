@@ -1,0 +1,22 @@
+project:
+  name: scgpt-mechinterp-perturbation-shifrut-causal-shifrut-targets-submission
+  seed: 42
+
+paths:
+  causal_scores: outputs/causal_shifrut_targets_submission/causal_scores.tsv
+  perturbation_h5ad: data/perturb/shifrut/perturb_processed_symbols.h5ad
+  hgnc_alias_tsv: external/hgnc_complete_set.txt
+  output_dir: outputs/perturb_validation/shifrut_causal_shifrut_targets_submission
+
+perturbation_validation:
+  obs_key: condition
+  control_labels:
+    - control
+  delimiter: "+"
+  allow_multi: false
+  min_cells: 20
+  top_k_targets: 80
+  min_abs_delta: 0.0
+  use_abs: true
+  exclude_self: true
+  score_mode: abs

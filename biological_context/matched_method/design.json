@@ -1,0 +1,28 @@
+{
+  "recorded_before_numerical_run": "2026-10-29",
+  "purpose": "Control unequal cell budgets in the stored kidney method comparison while retaining the historical scorer implementations.",
+  "outcomes_examined_before_design": false,
+  "dataset": "single_cell_mechinterp/outputs/invariant_causal_edges/kidney/processed.h5ad",
+  "expression": "Stored processed.h5ad /X, float32; no new normalization, binning, HVG selection or fitting.",
+  "selection": {
+    "parent_n": 800,
+    "parent_seed": 20260218,
+    "inner_n": 200,
+    "inner_seed": 20260218,
+    "algorithm": "parent = default_rng(parent_seed).choice(n_source,800,replace=False); inner=default_rng(inner_seed).choice(800,200,replace=False); selected=parent[inner]",
+    "reason": "Reconstruct the active historical scGPT scorer's exact nested 200-cell subset. Every comparison method receives this identical ordered matrix."
+  },
+  "panel": "hematopoiesis_76x108 restricted to the stored gene universe; retain its complete Cartesian product including self-pairs for comparability with the existing analysis",
+  "methods": {
+    "pearson": {"label": "Absolute Pearson correlation"},
+    "mutual_info": {"label": "kNN mutual information", "random_state": 20260218, "n_neighbors": 3},
+    "grnboost2": {"label": "sklearn gradient-boosting proxy", "random_state": 20260218, "n_estimators": 500, "max_features": "sqrt", "learning_rate": 0.01, "max_depth": 3, "subsample": 0.9},
+    "genie3": {"label": "sklearn random-forest proxy", "random_state": 20260218, "n_estimators": 500, "max_features": "sqrt", "n_jobs": 1},
+    "scgpt_attention": {"label": "Frozen whole-human continuous-input attention extraction", "random_state": 20260218, "n_cells": 200, "max_seq_len": 1200, "layer_aggregation": "mean", "head_aggregation": "mean", "checkpoint": "whole-human", "device": "mps"}
+  },
+  "metrics": ["pairwise signed Spearman", "top100 Jaccard", "top500 Jaccard", "top500 bounded-drift RSS and components"],
+  "inference_limits": ["Single deterministic kidney subset; no uncertainty or species-general claim", "Budget control only; no expression-encoding control", "Checkpoint pretraining args specify binned input whereas historical extraction uses continuous stored expression", "Self-pairs retained to reproduce original universe; no causal-edge accuracy claim", "Sklearn tree proxies are not canonical arboreto implementations"],
+  "compute_limit_seconds": 600,
+  "threads": 2,
+  "output_policy": "New directory only; retain all vectors, exact input matrix/identifiers, checksums, timings, loader diagnostics, config and logs; do not overwrite historical outputs."
+}

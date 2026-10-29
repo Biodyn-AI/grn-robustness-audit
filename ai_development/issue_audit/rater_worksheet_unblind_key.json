@@ -1,0 +1,164 @@
+[
+  {
+    "worksheet_row": 1,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round4_round4",
+    "title": "Round-3 summary still mixed single-draw and ensemble interpretations"
+  },
+  {
+    "worksheet_row": 2,
+    "axis": "cluster_resolution_sensitivity",
+    "round": "round1",
+    "title": "Baseline null calibration p-value resolution was coarse"
+  },
+  {
+    "worksheet_row": 3,
+    "axis": "integration_method_sensitivity",
+    "round": "round2_round2",
+    "title": "Precision-gain claims lacked statistical significance testing"
+  },
+  {
+    "worksheet_row": 4,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round4_round4",
+    "title": "Random-control null still leaked cross-run structure in round-3"
+  },
+  {
+    "worksheet_row": 5,
+    "axis": "rare_cell_type_stress_test",
+    "round": "round2_round2",
+    "title": "Single-null dependence could overstate or understate rare-cell failure"
+  },
+  {
+    "worksheet_row": 6,
+    "axis": "leave_one_donor_out_generalization",
+    "round": "round2_round2",
+    "title": "Train-donor scaling was confounded with holdout shrinkage"
+  },
+  {
+    "worksheet_row": 7,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round1",
+    "title": "Biological conclusions were drawn from unconstrained policy only"
+  },
+  {
+    "worksheet_row": 8,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round2_round2",
+    "title": "Overlap significance lacked multiplicity control in round-1"
+  },
+  {
+    "worksheet_row": 9,
+    "axis": "integration_method_sensitivity",
+    "round": "round2_round2",
+    "title": "Harmony conclusion was under-tested across hyperparameters"
+  },
+  {
+    "worksheet_row": 10,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round2_round2",
+    "title": "Round-1 constrained-policy gains were not separated from search-space-size effects"
+  },
+  {
+    "worksheet_row": 11,
+    "axis": "cluster_resolution_sensitivity",
+    "round": "round1",
+    "title": "Initial robustness null-permutation count made significance passing mathematically impossible"
+  },
+  {
+    "worksheet_row": 12,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round4_round4",
+    "title": "Round-3 Monte Carlo depth was too small for stable empirical claims"
+  },
+  {
+    "worksheet_row": 13,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round1",
+    "title": "Cross-cell comparisons were confounded by gene-universe drift"
+  },
+  {
+    "worksheet_row": 14,
+    "axis": "cluster_resolution_sensitivity",
+    "round": "round1",
+    "title": "Robustness sweep used RSS-only recommendations, inconsistent with primary dual-null policy"
+  },
+  {
+    "worksheet_row": 15,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round3_round3",
+    "title": "Round-2 prior-vs-random conclusion depended on a single random draw and was therefore outlier-fragile"
+  },
+  {
+    "worksheet_row": 16,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round1",
+    "title": "Reference stability relied on a single anchor seed, creating anchor fragility"
+  },
+  {
+    "worksheet_row": 17,
+    "axis": "integration_method_sensitivity",
+    "round": "round2_round2",
+    "title": "No perturbation-grounded validation despite causal claims context"
+  },
+  {
+    "worksheet_row": 18,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round3_round3",
+    "title": "Round-2 lacked uncertainty-calibrated statistical tests for prior-vs-random deltas"
+  },
+  {
+    "worksheet_row": 19,
+    "axis": "leave_one_donor_out_generalization",
+    "round": "round2_round2",
+    "title": "Composition confounding not controlled in split protocol"
+  },
+  {
+    "worksheet_row": 20,
+    "axis": "leave_one_donor_out_generalization",
+    "round": "round2_round2",
+    "title": "Donor selection bias toward high-count donors"
+  },
+  {
+    "worksheet_row": 21,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round2_round2",
+    "title": "Emergence conclusions were still trajectory-fragile in round-1"
+  },
+  {
+    "worksheet_row": 22,
+    "axis": "rare_cell_type_stress_test",
+    "round": "round2_round2",
+    "title": "Original data universe lacked out-of-sample stress testing"
+  },
+  {
+    "worksheet_row": 23,
+    "axis": "integration_method_sensitivity",
+    "round": "round2_round2",
+    "title": "Reference suite omitted direct ChIP-backed DoRothEA atlas"
+  },
+  {
+    "worksheet_row": 24,
+    "axis": "rare_cell_type_stress_test",
+    "round": "round2_round2",
+    "title": "Minimum-size guideline fitting could produce non-interpretable extrapolations"
+  },
+  {
+    "worksheet_row": 25,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round1",
+    "title": "Stability values had no null calibration, so practical meaning was ambiguous"
+  },
+  {
+    "worksheet_row": 26,
+    "axis": "rare_cell_type_stress_test",
+    "round": "round2_round2",
+    "title": "Cross-dataset comparability was vulnerable to panel-construction confounding"
+  },
+  {
+    "worksheet_row": 27,
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round3_round3",
+    "title": "Round-2 biological-support separation lacked random-ensemble confidence bounds"
+  }
+]

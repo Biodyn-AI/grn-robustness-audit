@@ -1,0 +1,68 @@
+{
+  "compute_limit_seconds": 600,
+  "dataset": "single_cell_mechinterp/outputs/invariant_causal_edges/kidney/processed.h5ad",
+  "expression": "Stored processed.h5ad /X, float32; no new normalization, binning, HVG selection or fitting.",
+  "inference_limits": [
+    "Single deterministic kidney subset; no uncertainty or species-general claim",
+    "Budget control only; no expression-encoding control",
+    "Checkpoint pretraining args specify binned input whereas historical extraction uses continuous stored expression",
+    "Self-pairs retained to reproduce original universe; no causal-edge accuracy claim",
+    "Sklearn tree proxies are not canonical arboreto implementations"
+  ],
+  "methods": {
+    "genie3": {
+      "label": "sklearn random-forest proxy",
+      "max_features": "sqrt",
+      "n_estimators": 500,
+      "n_jobs": 1,
+      "random_state": 20260218
+    },
+    "grnboost2": {
+      "label": "sklearn gradient-boosting proxy",
+      "learning_rate": 0.01,
+      "max_depth": 3,
+      "max_features": "sqrt",
+      "n_estimators": 500,
+      "random_state": 20260218,
+      "subsample": 0.9
+    },
+    "mutual_info": {
+      "label": "kNN mutual information",
+      "n_neighbors": 3,
+      "random_state": 20260218
+    },
+    "pearson": {
+      "label": "Absolute Pearson correlation"
+    },
+    "scgpt_attention": {
+      "checkpoint": "whole-human",
+      "device": "mps",
+      "head_aggregation": "mean",
+      "label": "Frozen whole-human continuous-input attention extraction",
+      "layer_aggregation": "mean",
+      "max_seq_len": 1200,
+      "n_cells": 200,
+      "random_state": 20260218
+    }
+  },
+  "metrics": [
+    "pairwise signed Spearman",
+    "top100 Jaccard",
+    "top500 Jaccard",
+    "top500 bounded-drift RSS and components"
+  ],
+  "outcomes_examined_before_design": false,
+  "output_policy": "New directory only; retain all vectors, exact input matrix/identifiers, checksums, timings, loader diagnostics, config and logs; do not overwrite historical outputs.",
+  "panel": "hematopoiesis_76x108 restricted to the stored gene universe; retain its complete Cartesian product including self-pairs for comparability with the existing analysis",
+  "purpose": "Control unequal cell budgets in the stored kidney method comparison while retaining the historical scorer implementations.",
+  "recorded_before_numerical_run": "2026-10-29",
+  "selection": {
+    "algorithm": "parent = default_rng(parent_seed).choice(n_source,800,replace=False); inner=default_rng(inner_seed).choice(800,200,replace=False); selected=parent[inner]",
+    "inner_n": 200,
+    "inner_seed": 20260218,
+    "parent_n": 800,
+    "parent_seed": 20260218,
+    "reason": "Reconstruct the active historical scGPT scorer's exact nested 200-cell subset. Every comparison method receives this identical ordered matrix."
+  },
+  "threads": 2
+}

@@ -1,0 +1,58 @@
+project:
+  name: eval-bias-baselines
+  seed: 42
+
+paths:
+  output_dir: outputs/eval_bias/baselines
+
+datasets:
+  - name: kidney
+    input_h5ad: outputs/atlas/kidney/tabula_sapiens_kidney_processed.h5ad
+  - name: lung
+    input_h5ad: outputs/atlas/lung/tabula_sapiens_lung_processed.h5ad
+  - name: immune
+    input_h5ad: outputs/atlas/immune/tabula_sapiens_immune_processed.h5ad
+
+methods:
+  - name: genie3
+    type: arboreto_genie3
+    regulators_from: external/networks/dorothea_human.tsv
+    max_regulators: 500
+    max_targets: 1000
+    n_estimators: 200
+    max_features: sqrt
+    max_depth: null
+    n_jobs: 1
+    top_k: 50
+    seed: 42
+  - name: grnboost2
+    type: arboreto_grnboost2
+    regulators_from: external/networks/dorothea_human.tsv
+    max_regulators: 500
+    max_targets: 1000
+    n_estimators: 200
+    learning_rate: 0.05
+    max_depth: 3
+    subsample: 0.8
+    max_features: 0.3
+    top_k: 50
+    seed: 42
+  - name: pearson
+    type: correlation
+    correlation: pearson
+    abs_value: true
+    top_k: 50
+  - name: spearman
+    type: correlation
+    correlation: spearman
+    abs_value: true
+    top_k: 50
+  - name: random
+    type: random
+    top_k: 50
+    seed: 42
+
+options:
+  max_cells: 2000
+  max_genes: null
+  remove_self: true

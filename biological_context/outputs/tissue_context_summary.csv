@@ -1,0 +1,7 @@
+dataset,cohort_label,study,species,tissue_context,scorer,panel,n_compartments,n_gate_pass,median_stability,median_null_auc,min_null_auc,max_null_auc,rare_n,rare_pass,intermediate_n,intermediate_pass,abundant_n,abundant_pass
+kidney,Kidney,Tabula Sapiens,Homo sapiens,kidney,pearson,primary,6,1,0.817215,0.514203,0.505662,0.652774,2,0,2,0,2,1
+lung,Lung,Tabula Sapiens,Homo sapiens,lung,pearson,primary,13,0,0.852518,0.522112,0.502020,0.647583,4,0,5,0,4,0
+immune,Immune,Tabula Sapiens,Homo sapiens,multi-organ immune compartment,pearson,primary,8,1,0.892095,0.577462,0.515758,0.708808,2,0,4,1,2,0
+immune_invariant,Immune alternative subset,Tabula Sapiens,Homo sapiens,multi-organ immune compartment,pearson,primary,8,0,0.850782,0.544542,0.512091,0.644310,2,0,4,0,2,0
+external_lung,External lung,Travaglini et al.,Homo sapiens,lung,pearson,primary,4,0,0.805153,0.554354,0.540872,0.610046,1,0,2,0,1,0
+delorey_covid_lung,COVID-19 lung,Delorey et al.,Homo sapiens,lung,pearson,primary,9,0,0.874372,0.529154,0.504775,0.638074,3,0,3,0,3,0

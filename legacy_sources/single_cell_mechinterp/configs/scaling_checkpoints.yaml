@@ -1,0 +1,51 @@
+model_tiers:
+  small:
+    status: available
+    checkpoint: external/scGPT_checkpoints/kidney/best_model.pt
+    vocab: external/scGPT_checkpoints/kidney/vocab.json
+    args: external/scGPT_checkpoints/kidney/args.json
+    notes: same architecture as whole-human; tier reflects pretraining data scale (kidney, 0.8M cells)
+  medium:
+    status: available
+    checkpoint: external/scGPT_checkpoints/brain/best_model.pt
+    vocab: external/scGPT_checkpoints/brain/vocab.json
+    args: external/scGPT_checkpoints/brain/args.json
+    notes: same architecture as whole-human; tier reflects pretraining data scale (brain, 13.2M cells)
+  large:
+    status: available
+    checkpoint: external/scGPT_checkpoints/whole-human/best_model.pt
+    vocab: external/scGPT_checkpoints/whole-human/vocab.json
+    args: external/scGPT_checkpoints/whole-human/args.json
+    notes: same architecture as other tiers; tier reflects pretraining data scale (whole-human, 33M cells)
+
+inventory:
+  - name: kidney
+    tier: small
+    checkpoint: external/scGPT_checkpoints/kidney/best_model.pt
+    vocab: external/scGPT_checkpoints/kidney/vocab.json
+    args: external/scGPT_checkpoints/kidney/args.json
+    nlayers: 12
+    nheads: 8
+    embsize: 512
+    max_seq_len: 1200
+    pretraining_cells_millions: 0.814
+  - name: brain
+    tier: medium
+    checkpoint: external/scGPT_checkpoints/brain/best_model.pt
+    vocab: external/scGPT_checkpoints/brain/vocab.json
+    args: external/scGPT_checkpoints/brain/args.json
+    nlayers: 12
+    nheads: 8
+    embsize: 512
+    max_seq_len: 1200
+    pretraining_cells_millions: 13.2
+  - name: whole-human
+    tier: large
+    checkpoint: external/scGPT_checkpoints/whole-human/best_model.pt
+    vocab: external/scGPT_checkpoints/whole-human/vocab.json
+    args: external/scGPT_checkpoints/whole-human/args.json
+    nlayers: 12
+    nheads: 8
+    embsize: 512
+    max_seq_len: 1200
+    pretraining_cells_millions: 33.0

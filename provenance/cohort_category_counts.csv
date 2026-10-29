@@ -1,0 +1,505 @@
+cohort,column,value,n_cells
+kidney_source,donor_id,TSP2,11376
+kidney_source,tissue,cortex of kidney,152
+kidney_source,tissue,kidney,11224
+kidney_source,tissue_in_publication,Kidney,11376
+kidney_source,method,10X,11024
+kidney_source,method,smartseq,352
+kidney_source,assay,10x 3' v3,11024
+kidney_source,assay,Smart-seq2,352
+kidney_source,_scvi_batch,0,11024
+kidney_source,_scvi_batch,1,352
+kidney_source,broad_cell_class,endothelial cell,101
+kidney_source,broad_cell_class,granulocyte,22
+kidney_source,broad_cell_class,innate lymphoid cell,201
+kidney_source,broad_cell_class,kidney epithelial cell,9278
+kidney_source,broad_cell_class,lymphocyte of b lineage,499
+kidney_source,broad_cell_class,myeloid leukocyte,422
+kidney_source,broad_cell_class,t cell,853
+kidney_source,compartment,Endothelium,101
+kidney_source,compartment,Epithelium,9278
+kidney_source,compartment,Immune,1997
+kidney_source,disease,normal,11376
+external_lung_source,donor_id,1,3987
+external_lung_source,donor_id,2,3273
+external_lung_source,donor_id,3,2149
+external_lung_source,tissue,blood,752
+external_lung_source,tissue,lung,8657
+external_lung_source,assay,Smart-seq2,9409
+external_lung_source,compartment,endothelial,1866
+external_lung_source,compartment,epithelial,3404
+external_lung_source,compartment,immune,2494
+external_lung_source,compartment,stromal,1645
+external_lung_source,disease,normal,9409
+kidney,donor_id,TSP2,8000
+kidney,tissue,cortex of kidney,152
+kidney,tissue,kidney,7848
+kidney,tissue_in_publication,Kidney,8000
+kidney,method,10X,7648
+kidney,method,smartseq,352
+kidney,assay,10x 3' v3,7648
+kidney,assay,Smart-seq2,352
+kidney,_scvi_batch,0,7648
+kidney,_scvi_batch,1,352
+kidney,broad_cell_class,endothelial cell,69
+kidney,broad_cell_class,granulocyte,10
+kidney,broad_cell_class,innate lymphoid cell,155
+kidney,broad_cell_class,kidney epithelial cell,6402
+kidney,broad_cell_class,lymphocyte of b lineage,397
+kidney,broad_cell_class,myeloid leukocyte,316
+kidney,broad_cell_class,t cell,651
+kidney,compartment,Endothelium,69
+kidney,compartment,Epithelium,6402
+kidney,compartment,Immune,1529
+kidney,disease,normal,8000
+lung,donor_id,TSP1,5757
+lung,donor_id,TSP14,4351
+lung,donor_id,TSP2,907
+lung,donor_id,TSP25,3985
+lung,tissue,lung,15000
+lung,tissue_in_publication,Lung,15000
+lung,method,10X,12107
+lung,method,smartseq,2893
+lung,assay,10x 3' v3,12107
+lung,assay,Smart-seq2,2893
+lung,_scvi_batch,0,5067
+lung,_scvi_batch,1,690
+lung,_scvi_batch,3,907
+lung,_scvi_batch,4,3055
+lung,_scvi_batch,5,1296
+lung,_scvi_batch,6,3985
+lung,broad_cell_class,adventitial cell,419
+lung,broad_cell_class,ciliated epithelial cell,373
+lung,broad_cell_class,contractile cell,195
+lung,broad_cell_class,dendritic cell,29
+lung,broad_cell_class,endo-epithelial cell,107
+lung,broad_cell_class,endothelial cell,992
+lung,broad_cell_class,epithelial cell,1382
+lung,broad_cell_class,epithelial cell of lung,5036
+lung,broad_cell_class,fibroblast,412
+lung,broad_cell_class,glandular epithelial cell,280
+lung,broad_cell_class,granulocyte,266
+lung,broad_cell_class,innate lymphoid cell,30
+lung,broad_cell_class,lymphocyte of b lineage,44
+lung,broad_cell_class,meso-epithelial cell,3
+lung,broad_cell_class,myeloid leukocyte,5134
+lung,broad_cell_class,secretory cell,3
+lung,broad_cell_class,t cell,295
+lung,compartment,Endothelium,992
+lung,compartment,Epithelium,7184
+lung,compartment,Immune,5798
+lung,compartment,Stromal,1026
+lung,disease,normal,15000
+immune_invariant,donor_id,TSP1,615
+immune_invariant,donor_id,TSP10,118
+immune_invariant,donor_id,TSP11,31
+immune_invariant,donor_id,TSP12,2
+immune_invariant,donor_id,TSP13,11
+immune_invariant,donor_id,TSP14,3372
+immune_invariant,donor_id,TSP15,16
+immune_invariant,donor_id,TSP17,61
+immune_invariant,donor_id,TSP19,145
+immune_invariant,donor_id,TSP2,2223
+immune_invariant,donor_id,TSP20,297
+immune_invariant,donor_id,TSP21,2320
+immune_invariant,donor_id,TSP25,2195
+immune_invariant,donor_id,TSP26,104
+immune_invariant,donor_id,TSP27,1510
+immune_invariant,donor_id,TSP28,1
+immune_invariant,donor_id,TSP3,4
+immune_invariant,donor_id,TSP30,20
+immune_invariant,donor_id,TSP4,170
+immune_invariant,donor_id,TSP5,5
+immune_invariant,donor_id,TSP6,231
+immune_invariant,donor_id,TSP7,1250
+immune_invariant,donor_id,TSP8,204
+immune_invariant,donor_id,TSP9,95
+immune_invariant,tissue,abdominal aorta,3
+immune_invariant,tissue,adipose tissue,569
+immune_invariant,tissue,anterior part of tongue,22
+immune_invariant,tissue,anterior segment of eyeball,9
+immune_invariant,tissue,aorta,135
+immune_invariant,tissue,ascending colon,41
+immune_invariant,tissue,bladder organ,459
+immune_invariant,tissue,blood,2130
+immune_invariant,tissue,bone marrow,641
+immune_invariant,tissue,brown adipose tissue,543
+immune_invariant,tissue,buccal mucosa,1
+immune_invariant,tissue,cardiac ventricle,2
+immune_invariant,tissue,chorioretinal region,2
+immune_invariant,tissue,coronary artery,175
+immune_invariant,tissue,cortex of kidney,4
+immune_invariant,tissue,crista ampullaris,9
+immune_invariant,tissue,duodenum,49
+immune_invariant,tissue,endometrium,40
+immune_invariant,tissue,exocrine pancreas,96
+immune_invariant,tissue,eye,5
+immune_invariant,tissue,heart,22
+immune_invariant,tissue,heart right ventricle,11
+immune_invariant,tissue,ileum,66
+immune_invariant,tissue,inferior vena cava,3
+immune_invariant,tissue,inguinal lymph node,505
+immune_invariant,tissue,kidney,38
+immune_invariant,tissue,lacrimal gland,4
+immune_invariant,tissue,large intestine,137
+immune_invariant,tissue,left coronary artery,3
+immune_invariant,tissue,left ovary,8
+immune_invariant,tissue,liver,352
+immune_invariant,tissue,lung,669
+immune_invariant,tissue,lymph node,3075
+immune_invariant,tissue,mammary gland,178
+immune_invariant,tissue,mesenteric lymph node,4
+immune_invariant,tissue,mucosa of stomach,171
+immune_invariant,tissue,muscle of abdomen,100
+immune_invariant,tissue,muscle of pelvic diaphragm,62
+immune_invariant,tissue,muscularis mucosae of stomach,7
+immune_invariant,tissue,myometrium,11
+immune_invariant,tissue,ocular surface region,3
+immune_invariant,tissue,ovary,1
+immune_invariant,tissue,parotid gland,205
+immune_invariant,tissue,posterior part of tongue,142
+immune_invariant,tissue,posterior segment of eyeball,3
+immune_invariant,tissue,prostate gland,111
+immune_invariant,tissue,retinal neural layer,1
+immune_invariant,tissue,right cardiac atrium,21
+immune_invariant,tissue,right ovary,12
+immune_invariant,tissue,sclera,10
+immune_invariant,tissue,sigmoid colon,137
+immune_invariant,tissue,skin of abdomen,23
+immune_invariant,tissue,skin of body,121
+immune_invariant,tissue,skin of chest,41
+immune_invariant,tissue,small intestine,300
+immune_invariant,tissue,spleen,1802
+immune_invariant,tissue,stomach,89
+immune_invariant,tissue,stomach smooth muscle,374
+immune_invariant,tissue,subcutaneous adipose tissue,181
+immune_invariant,tissue,sublingual gland,16
+immune_invariant,tissue,submandibular gland,24
+immune_invariant,tissue,testis,2
+immune_invariant,tissue,thoracic aorta,4
+immune_invariant,tissue,thymus,697
+immune_invariant,tissue,trachea,279
+immune_invariant,tissue,uterus,10
+immune_invariant,tissue,utricle of membranous labyrinth,2
+immune_invariant,tissue,vasculature,28
+immune_invariant,tissue_in_publication,Bladder,459
+immune_invariant,tissue_in_publication,Blood,2130
+immune_invariant,tissue_in_publication,Bone_Marrow,641
+immune_invariant,tissue_in_publication,Ear,11
+immune_invariant,tissue_in_publication,Eye,37
+immune_invariant,tissue_in_publication,Fat,1293
+immune_invariant,tissue_in_publication,Heart,56
+immune_invariant,tissue_in_publication,Kidney,42
+immune_invariant,tissue_in_publication,Large_Intestine,315
+immune_invariant,tissue_in_publication,Liver,352
+immune_invariant,tissue_in_publication,Lung,669
+immune_invariant,tissue_in_publication,Lymph_Node,3584
+immune_invariant,tissue_in_publication,Mammary,178
+immune_invariant,tissue_in_publication,Muscle,162
+immune_invariant,tissue_in_publication,Ovary,21
+immune_invariant,tissue_in_publication,Pancreas,96
+immune_invariant,tissue_in_publication,Prostate,111
+immune_invariant,tissue_in_publication,Salivary_Gland,245
+immune_invariant,tissue_in_publication,Skin,186
+immune_invariant,tissue_in_publication,Small_Intestine,415
+immune_invariant,tissue_in_publication,Spleen,1802
+immune_invariant,tissue_in_publication,Stomach,641
+immune_invariant,tissue_in_publication,Testis,2
+immune_invariant,tissue_in_publication,Thymus,697
+immune_invariant,tissue_in_publication,Tongue,164
+immune_invariant,tissue_in_publication,Trachea,279
+immune_invariant,tissue_in_publication,Uterus,61
+immune_invariant,tissue_in_publication,Vasculature,351
+immune_invariant,method,10X,14278
+immune_invariant,method,smartseq,722
+immune_invariant,assay,10x 3' v3,12269
+immune_invariant,assay,10x 5' v2,2009
+immune_invariant,assay,Smart-seq2,721
+immune_invariant,assay,Smart-seq3,1
+immune_invariant,_scvi_batch,0,572
+immune_invariant,_scvi_batch,1,43
+immune_invariant,_scvi_batch,10,1
+immune_invariant,_scvi_batch,11,220
+immune_invariant,_scvi_batch,12,11
+immune_invariant,_scvi_batch,13,1128
+immune_invariant,_scvi_batch,14,122
+immune_invariant,_scvi_batch,15,197
+immune_invariant,_scvi_batch,16,7
+immune_invariant,_scvi_batch,17,95
+immune_invariant,_scvi_batch,18,89
+immune_invariant,_scvi_batch,19,29
+immune_invariant,_scvi_batch,2,1892
+immune_invariant,_scvi_batch,21,31
+immune_invariant,_scvi_batch,22,1
+immune_invariant,_scvi_batch,23,1
+immune_invariant,_scvi_batch,24,11
+immune_invariant,_scvi_batch,25,1969
+immune_invariant,_scvi_batch,26,1205
+immune_invariant,_scvi_batch,27,198
+immune_invariant,_scvi_batch,28,11
+immune_invariant,_scvi_batch,29,5
+immune_invariant,_scvi_batch,3,104
+immune_invariant,_scvi_batch,30,61
+immune_invariant,_scvi_batch,31,145
+immune_invariant,_scvi_batch,32,289
+immune_invariant,_scvi_batch,33,8
+immune_invariant,_scvi_batch,34,1851
+immune_invariant,_scvi_batch,35,469
+immune_invariant,_scvi_batch,36,1964
+immune_invariant,_scvi_batch,37,231
+immune_invariant,_scvi_batch,38,104
+immune_invariant,_scvi_batch,39,1510
+immune_invariant,_scvi_batch,4,227
+immune_invariant,_scvi_batch,40,1
+immune_invariant,_scvi_batch,42,19
+immune_invariant,_scvi_batch,44,1
+immune_invariant,_scvi_batch,6,4
+immune_invariant,_scvi_batch,7,147
+immune_invariant,_scvi_batch,8,23
+immune_invariant,_scvi_batch,9,4
+immune_invariant,broad_cell_class,dendritic cell,14
+immune_invariant,broad_cell_class,erythroid lineage cell,288
+immune_invariant,broad_cell_class,granulocyte,1925
+immune_invariant,broad_cell_class,hematopoietic cell,67
+immune_invariant,broad_cell_class,innate lymphoid cell,405
+immune_invariant,broad_cell_class,lymphocyte of b lineage,3480
+immune_invariant,broad_cell_class,myeloid leukocyte,3299
+immune_invariant,broad_cell_class,stem cell,68
+immune_invariant,broad_cell_class,t cell,5454
+immune_invariant,compartment,Immune,15000
+immune_invariant,disease,normal,15000
+immune,donor_id,TSP1,775
+immune,donor_id,TSP10,413
+immune,donor_id,TSP11,97
+immune,donor_id,TSP12,3
+immune,donor_id,TSP13,11
+immune,donor_id,TSP14,4513
+immune,donor_id,TSP15,22
+immune,donor_id,TSP17,61
+immune,donor_id,TSP19,207
+immune,donor_id,TSP2,2398
+immune,donor_id,TSP20,297
+immune,donor_id,TSP21,3223
+immune,donor_id,TSP25,3261
+immune,donor_id,TSP26,121
+immune,donor_id,TSP27,1934
+immune,donor_id,TSP28,2
+immune,donor_id,TSP3,4
+immune,donor_id,TSP30,20
+immune,donor_id,TSP4,225
+immune,donor_id,TSP5,12
+immune,donor_id,TSP6,248
+immune,donor_id,TSP7,1805
+immune,donor_id,TSP8,253
+immune,donor_id,TSP9,95
+immune,tissue,abdominal aorta,3
+immune,tissue,adipose tissue,632
+immune,tissue,anterior part of tongue,22
+immune,tissue,anterior segment of eyeball,9
+immune,tissue,aorta,186
+immune,tissue,ascending colon,156
+immune,tissue,bladder organ,623
+immune,tissue,blood,2982
+immune,tissue,bone marrow,898
+immune,tissue,brown adipose tissue,889
+immune,tissue,buccal mucosa,1
+immune,tissue,cardiac atrium,1
+immune,tissue,cardiac ventricle,4
+immune,tissue,chorioretinal region,2
+immune,tissue,cornea,6
+immune,tissue,coronary artery,175
+immune,tissue,cortex of kidney,4
+immune,tissue,crista ampullaris,9
+immune,tissue,duodenum,66
+immune,tissue,endocrine pancreas,4
+immune,tissue,endometrium,95
+immune,tissue,exocrine pancreas,96
+immune,tissue,eye,17
+immune,tissue,eyelid,127
+immune,tissue,heart,22
+immune,tissue,heart right ventricle,11
+immune,tissue,ileum,66
+immune,tissue,inferior vena cava,3
+immune,tissue,inguinal lymph node,688
+immune,tissue,jejunum,2
+immune,tissue,kidney,63
+immune,tissue,lacrimal gland,143
+immune,tissue,large intestine,192
+immune,tissue,left coronary artery,3
+immune,tissue,left ovary,11
+immune,tissue,liver,414
+immune,tissue,lung,950
+immune,tissue,lymph node,3376
+immune,tissue,mammary gland,178
+immune,tissue,mesenteric lymph node,278
+immune,tissue,mucosa of stomach,171
+immune,tissue,muscle of abdomen,101
+immune,tissue,muscle of pelvic diaphragm,74
+immune,tissue,muscularis mucosae of stomach,7
+immune,tissue,myometrium,11
+immune,tissue,ocular surface region,3
+immune,tissue,ovary,1
+immune,tissue,parotid gland,335
+immune,tissue,posterior part of tongue,157
+immune,tissue,posterior segment of eyeball,3
+immune,tissue,prostate gland,160
+immune,tissue,retinal neural layer,1
+immune,tissue,right cardiac atrium,21
+immune,tissue,right ovary,13
+immune,tissue,sclera,10
+immune,tissue,sigmoid colon,138
+immune,tissue,skin of abdomen,50
+immune,tissue,skin of body,267
+immune,tissue,skin of chest,41
+immune,tissue,small intestine,300
+immune,tissue,spleen,2408
+immune,tissue,stomach,222
+immune,tissue,stomach smooth muscle,374
+immune,tissue,subcutaneous adipose tissue,264
+immune,tissue,sublingual gland,136
+immune,tissue,submandibular gland,24
+immune,tissue,testis,3
+immune,tissue,thoracic aorta,57
+immune,tissue,thymus,905
+immune,tissue,trachea,296
+immune,tissue,uterus,10
+immune,tissue,utricle of membranous labyrinth,2
+immune,tissue,vasculature,28
+immune,tissue_in_publication,Bladder,623
+immune,tissue_in_publication,Blood,2982
+immune,tissue_in_publication,Bone_Marrow,898
+immune,tissue_in_publication,Ear,11
+immune,tissue_in_publication,Eye,321
+immune,tissue_in_publication,Fat,1785
+immune,tissue_in_publication,Heart,59
+immune,tissue_in_publication,Kidney,67
+immune,tissue_in_publication,Large_Intestine,486
+immune,tissue_in_publication,Liver,414
+immune,tissue_in_publication,Lung,950
+immune,tissue_in_publication,Lymph_Node,4342
+immune,tissue_in_publication,Mammary,178
+immune,tissue_in_publication,Muscle,175
+immune,tissue_in_publication,Ovary,25
+immune,tissue_in_publication,Pancreas,100
+immune,tissue_in_publication,Prostate,160
+immune,tissue_in_publication,Salivary_Gland,495
+immune,tissue_in_publication,Skin,359
+immune,tissue_in_publication,Small_Intestine,434
+immune,tissue_in_publication,Spleen,2408
+immune,tissue_in_publication,Stomach,774
+immune,tissue_in_publication,Testis,3
+immune,tissue_in_publication,Thymus,905
+immune,tissue_in_publication,Tongue,179
+immune,tissue_in_publication,Trachea,296
+immune,tissue_in_publication,Uterus,116
+immune,tissue_in_publication,Vasculature,455
+immune,method,10X,19278
+immune,method,smartseq,722
+immune,assay,10x 3' v3,17113
+immune,assay,10x 5' v2,2165
+immune,assay,Smart-seq2,721
+immune,assay,Smart-seq3,1
+immune,_scvi_batch,0,732
+immune,_scvi_batch,1,43
+immune,_scvi_batch,10,1
+immune,_scvi_batch,11,237
+immune,_scvi_batch,12,11
+immune,_scvi_batch,13,1683
+immune,_scvi_batch,14,122
+immune,_scvi_batch,15,246
+immune,_scvi_batch,16,7
+immune,_scvi_batch,17,95
+immune,_scvi_batch,18,384
+immune,_scvi_batch,19,29
+immune,_scvi_batch,2,2067
+immune,_scvi_batch,20,66
+immune,_scvi_batch,21,31
+immune,_scvi_batch,22,2
+immune,_scvi_batch,23,1
+immune,_scvi_batch,24,11
+immune,_scvi_batch,25,3073
+immune,_scvi_batch,26,1242
+immune,_scvi_batch,27,198
+immune,_scvi_batch,28,17
+immune,_scvi_batch,29,5
+immune,_scvi_batch,3,104
+immune,_scvi_batch,30,61
+immune,_scvi_batch,31,207
+immune,_scvi_batch,32,289
+immune,_scvi_batch,33,8
+immune,_scvi_batch,34,2701
+immune,_scvi_batch,35,522
+immune,_scvi_batch,36,3030
+immune,_scvi_batch,37,231
+immune,_scvi_batch,38,121
+immune,_scvi_batch,39,1934
+immune,_scvi_batch,4,227
+immune,_scvi_batch,40,2
+immune,_scvi_batch,42,19
+immune,_scvi_batch,44,1
+immune,_scvi_batch,6,4
+immune,_scvi_batch,7,202
+immune,_scvi_batch,8,23
+immune,_scvi_batch,9,11
+immune,broad_cell_class,dendritic cell,16
+immune,broad_cell_class,erythroid lineage cell,506
+immune,broad_cell_class,granulocyte,2742
+immune,broad_cell_class,hematopoietic cell,91
+immune,broad_cell_class,innate lymphoid cell,504
+immune,broad_cell_class,lymphocyte of b lineage,4623
+immune,broad_cell_class,myeloid leukocyte,4303
+immune,broad_cell_class,stem cell,79
+immune,broad_cell_class,t cell,7136
+immune,compartment,Immune,20000
+immune,disease,normal,20000
+external_lung,donor_id,1,3987
+external_lung,donor_id,2,3273
+external_lung,donor_id,3,1740
+external_lung,tissue,blood,752
+external_lung,tissue,lung,8248
+external_lung,assay,Smart-seq2,9000
+external_lung,compartment,endothelial,1866
+external_lung,compartment,epithelial,3380
+external_lung,compartment,immune,2109
+external_lung,compartment,stromal,1645
+external_lung,disease,normal,9000
+delorey_covid_lung,donor_id,C51ctr,6098
+delorey_covid_lung,donor_id,C52ctr,4513
+delorey_covid_lung,donor_id,C53ctr,7120
+delorey_covid_lung,donor_id,C54ctr,4382
+delorey_covid_lung,donor_id,C55ctr,5685
+delorey_covid_lung,donor_id,C56ctr,4090
+delorey_covid_lung,donor_id,C57ctr,4789
+delorey_covid_lung,donor_id,L01cov,3060
+delorey_covid_lung,donor_id,L03cov,5060
+delorey_covid_lung,donor_id,L04cov,3630
+delorey_covid_lung,donor_id,L04covaddon,4574
+delorey_covid_lung,donor_id,L05cov,3052
+delorey_covid_lung,donor_id,L06cov,7582
+delorey_covid_lung,donor_id,L07cov,5074
+delorey_covid_lung,donor_id,L08cov,4149
+delorey_covid_lung,donor_id,L09cov,3605
+delorey_covid_lung,donor_id,L10cov,1550
+delorey_covid_lung,donor_id,L11cov,3296
+delorey_covid_lung,donor_id,L12cov,3876
+delorey_covid_lung,donor_id,L13cov,4862
+delorey_covid_lung,donor_id,L15cov,4056
+delorey_covid_lung,donor_id,L16cov,1822
+delorey_covid_lung,donor_id,L17cov,4651
+delorey_covid_lung,donor_id,L18cov,2816
+delorey_covid_lung,donor_id,L19cov,2509
+delorey_covid_lung,donor_id,L21cov,3425
+delorey_covid_lung,donor_id,L22cov,6987
+delorey_covid_lung,tissue,lung,116313
+delorey_covid_lung,assay,10x 3' v3,116313
+delorey_covid_lung,cell_type_main,APC-like,849
+delorey_covid_lung,cell_type_main,B cells,7236
+delorey_covid_lung,cell_type_main,Endothelial cells,5386
+delorey_covid_lung,cell_type_main,Epithelial cells,30069
+delorey_covid_lung,cell_type_main,Fibroblasts,22909
+delorey_covid_lung,cell_type_main,Mast cells,1464
+delorey_covid_lung,cell_type_main,Myeloid,29632
+delorey_covid_lung,cell_type_main,Neuronal cells,2017
+delorey_covid_lung,cell_type_main,T cells,16751
+delorey_covid_lung,disease,COVID-19,79636
+delorey_covid_lung,disease,normal,36677

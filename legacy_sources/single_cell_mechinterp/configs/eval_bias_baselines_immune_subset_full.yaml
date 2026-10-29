@@ -1,0 +1,23 @@
+project:
+  name: eval-bias-baselines-immune-subset-full
+  seed: 42
+
+paths:
+  output_dir: outputs/eval_bias/baselines_immune_subset
+
+datasets:
+  - name: immune_subset_hpn
+    input_h5ad: outputs/tabula_sapiens_immune_subset_hpn_processed.h5ad
+
+methods:
+  - name: pidc_full
+    type: pidc_full
+    bins: 8
+    top_k: 50
+    max_cells: 500
+    max_genes: 200
+
+options:
+  max_cells: 1000
+  max_genes: 1000
+  remove_self: true

@@ -1,0 +1,11 @@
+cohort,path,exists,n_cells,n_genes,provider_version,title,has_raw,layers,size_bytes,n_donor_id,n_tissue,n_tissue_in_publication,n_method,n_assay,n__scvi_batch,n_broad_cell_class,n_compartment,n_disease,n_cell_type_main
+kidney_source,single_cell_mechinterp/data/raw/tabula_sapiens_kidney.h5ad,True,11376,60606,65ca6e36-73b0-4c88-b0f3-7b23b48844ad,Tabula Sapiens - Kidney,True,decontXcounts;scale_data,449970582,1,2,1,2,2,2,7,3,1,
+lung_source,single_cell_mechinterp/data/raw/tabula_sapiens_lung.h5ad,False,,,,,,,,,,,,,,,,,
+immune_20k_source,single_cell_mechinterp/data/raw/tabula_sapiens_immune_subset_20000.h5ad,False,,,,,,,,,,,,,,,,,
+external_lung_source,single_cell_mechinterp/data/raw/krasnow_lung_smartsq2.h5ad,True,9409,53514,c88e0403-da93-40f4-99b5-f5fdeb81a82c,"Krasnow Lab Human Lung Cell Atlas, Smart-seq2",True,,186674175,3,2,,,1,,,4,1,
+kidney,single_cell_mechinterp/outputs/invariant_causal_edges/kidney/processed.h5ad,True,8000,8143,65ca6e36-73b0-4c88-b0f3-7b23b48844ad,Tabula Sapiens - Kidney,True,decontXcounts;scale_data,419319696,1,2,1,2,2,2,7,3,1,
+lung,single_cell_mechinterp/outputs/invariant_causal_edges/lung/processed.h5ad,True,15000,8181,40f8b1a3-9f76-4ac4-8761-32078555ed4e,Tabula Sapiens - Lung,True,decontXcounts;scale_data,1118236952,4,1,1,2,2,6,17,4,1,
+immune_invariant,single_cell_mechinterp/outputs/invariant_causal_edges/immune/processed.h5ad,True,15000,8354,e62b0182-368f-4875-8ac1-f49e3d5eda60,Tabula Sapiens - Immune,True,decontXcounts;scale_data,720335344,24,68,28,2,4,41,9,1,1,
+immune,single_cell_mechinterp/outputs/tabula_sapiens_immune_subset_hpn_processed.h5ad,True,20000,4941,e62b0182-368f-4875-8ac1-f49e3d5eda60,Tabula Sapiens - Immune,True,decontXcounts;scale_data,570411664,24,73,28,2,4,42,9,1,1,
+external_lung,single_cell_mechinterp/outputs/invariant_causal_edges/external_lung/processed.h5ad,True,9000,8229,c88e0403-da93-40f4-99b5-f5fdeb81a82c,"Krasnow Lab Human Lung Cell Atlas, Smart-seq2",True,,258893723,3,2,,,1,,,4,1,
+delorey_covid_lung,subproject_merged_A_robustness_audit/implementation/data_external/delorey_covid_lung.h5ad,True,116313,33523,75c059c8-8fb7-4e6e-a618-a3e01ac42060,A molecular single-cell lung atlas of lethal COVID-19,True,,501865887,27,1,,,1,,,,2,9

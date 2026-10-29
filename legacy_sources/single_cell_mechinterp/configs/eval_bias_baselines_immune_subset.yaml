@@ -1,0 +1,78 @@
+project:
+  name: eval-bias-baselines-immune-subset
+  seed: 42
+
+paths:
+  output_dir: outputs/eval_bias/baselines_immune_subset
+
+datasets:
+  - name: immune_subset_hpn
+    input_h5ad: outputs/tabula_sapiens_immune_subset_hpn_processed.h5ad
+
+methods:
+  - name: genie3
+    type: arboreto_genie3
+    regulators_from: external/networks/trrust_human.tsv
+    max_regulators: 300
+    max_targets: 800
+    n_estimators: 200
+    max_features: sqrt
+    max_depth: null
+    n_jobs: 1
+    top_k: 50
+    seed: 42
+    n_workers: 1
+    threads_per_worker: 2
+  - name: grnboost2
+    type: arboreto_grnboost2
+    regulators_from: external/networks/trrust_human.tsv
+    max_regulators: 300
+    max_targets: 800
+    n_estimators: 200
+    learning_rate: 0.05
+    max_depth: 3
+    subsample: 0.8
+    max_features: 0.3
+    top_k: 50
+    seed: 42
+    n_workers: 1
+    threads_per_worker: 2
+  - name: scenic_grnboost2
+    type: scenic_grnboost2
+    regulators_from: external/networks/trrust_human.tsv
+    max_regulators: 300
+    max_targets: 800
+    n_estimators: 200
+    learning_rate: 0.05
+    max_depth: 3
+    subsample: 0.8
+    max_features: 0.3
+    top_k: 50
+    seed: 42
+    n_workers: 1
+    threads_per_worker: 2
+  - name: pidc_proxy
+    type: pidc_proxy
+    bins: 8
+    top_k: 50
+    max_cells: 500
+    max_genes: 300
+  - name: pearson
+    type: correlation
+    correlation: pearson
+    abs_value: true
+    top_k: 50
+  - name: spearman
+    type: correlation
+    correlation: spearman
+    abs_value: true
+    top_k: 50
+  - name: random
+    type: random
+    top_k: 50
+    seed: 42
+
+options:
+  max_cells: 1000
+  max_genes: 1000
+  remove_self: true

@@ -1,0 +1,58 @@
+{
+  "design_sha256": "480a37d8df302ef28bb16785696a2e12ddd9a4b8b0e6f45fd4390a8cff882b36",
+  "device": "mps",
+  "environment": {
+    "MKL_NUM_THREADS": "2",
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2"
+  },
+  "input_expression_sha256": "7508b88a1a01bdbe0750a5f396d1d43b265cf69e5d58729a977c5831ce6f2eab",
+  "matched_input_sha256": "8bdec8486800b4f45814e5e80b12c51d8383e1ff5335b6a19206cca2d04a2499",
+  "matched_shape": [
+    200,
+    8143
+  ],
+  "n_edges": 7425,
+  "n_targets": 99,
+  "n_tfs": 75,
+  "package_versions": {
+    "h5py": "3.15.1",
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.15.2",
+    "torch": "2.3.1"
+  },
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "preprocessing": "unchanged stored /X; no new transformation",
+  "python": "3.10.19 | packaged by conda-forge | (main, Oct 22 2025, 22:46:49) [Clang 19.1.7 ]",
+  "scgpt_in_vocab_panel_genes": 174,
+  "scgpt_panel_genes": 174,
+  "selected_cells_sha256": "ce5f910950dced80b90168772e334557566785a7a5a04bc6b10a694b97d3d89c",
+  "source_files_sha256": {
+    "single_cell_mechinterp/external/scGPT_checkpoints/whole-human/args.json": "c18e075e018140cb8b2d9029387b9de26607a5ce6a8ccabd6ead70cd76b95d60",
+    "single_cell_mechinterp/external/scGPT_checkpoints/whole-human/best_model.pt": "6cb5d451ab5c4b33eb673adbe4fddc61d2389df1b89b7651a9fe2e557572b922",
+    "single_cell_mechinterp/external/scGPT_checkpoints/whole-human/vocab.json": "acca93d114ca62c3f0f50debbd23e8c87f0714f4737764454f6b2b13f2e8580f",
+    "single_cell_mechinterp/outputs/invariant_causal_edges/kidney/processed.h5ad": "e152f58a938d7a04c4886a96f88266907be6719d5ecacb8b8f6d03ceda130838",
+    "subproject_merged_A_robustness_audit/implementation/fragility/axes/axis2_resolution/runner.py": "4a7b21c04966206f26d947a413a4a0b8e37924d5c2eea09ae38181b19a9d5bac",
+    "subproject_merged_A_robustness_audit/implementation/fragility/scorers/__init__.py": "f3ed0cca10a64101707da513f26d43e5f2e1e4144739f330b24d0eed6188a1f6",
+    "subproject_merged_A_robustness_audit/implementation/fragility/scorers/base.py": "ebfbc814832c62374ea3ffeef1a0bca6400be9445ae7c30ef7bd68740755a37a",
+    "subproject_merged_A_robustness_audit/implementation/fragility/scorers/mutual_information.py": "164338494e2f160ce4767fea69497c5843994f5af5323fa86f5d13dc9fd5d62e",
+    "subproject_merged_A_robustness_audit/implementation/fragility/scorers/pearson.py": "c51086a9d7db5cc6424b5700745b412711b6a4479f4f35030673fb14caf9e5be",
+    "subproject_merged_A_robustness_audit/implementation/fragility/scorers/scgpt_minimal.py": "950c55decaae8c53c72497750679742600d4dbd82a54528a7260c01cfeacc9e7",
+    "subproject_merged_A_robustness_audit/implementation/fragility/scorers/scgpt_scorer.py": "09b0c561686ba509933b0110f89ab265f19bfcfa74e16bc60ec9b8b070637c98",
+    "subproject_merged_A_robustness_audit/implementation/fragility/scorers/tree.py": "79a7ed5f5998ec2ace4c378ed69783557005af94f4a05e4cb162c18275fe470d",
+    "subproject_merged_A_robustness_audit/implementation/scripts/wp1_kidney_full.py": "74873e1c68845b7b3b05e1afda68c2628ea1b3961d183ed0501790a10bee87e7",
+    "subproject_merged_A_robustness_audit/submission_plos_one/revision/biology/matched_method/design.json": "480a37d8df302ef28bb16785696a2e12ddd9a4b8b0e6f45fd4390a8cff882b36",
+    "subproject_merged_A_robustness_audit/submission_plos_one/revision/biology/matched_method/run_matched_comparison.py": "ae8adf5b9282a373907245b3d6c71994e4c776fb243d772b9a8dbd1fe1952020"
+  },
+  "source_indices_sha256": "1432e978655320e4731a6cdb9a46d771ce55d611e93fe85dab904236fbcfed53",
+  "source_shape": [
+    8000,
+    8143
+  ],
+  "status": "complete",
+  "threads": 2,
+  "torch_deterministic_algorithms": false,
+  "total_seconds": 57.16490916600014
+}

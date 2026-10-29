@@ -1,0 +1,21 @@
+item,restored_inputs,scope
+Fig1,implementation_outputs/wp2/mvcc_full_curves.csv;implementation_outputs/wp2/mvcc_anchor_sensitivity.csv,Pearson per-draw curves and MVCC summaries
+Fig2,implementation_outputs/axis2/scorecard.csv;implementation_outputs/axis2/null_calibration.csv;implementation_outputs/axis2/within_coarse_group.csv;implementation_outputs/wp3_axis2/rss_empirical_null.csv,Resolution and null calibration
+Fig3,implementation_outputs/axis3/cell_type_metrics.csv;implementation_outputs/wp4/reliability_gate_grid.csv,PanelsA/B shared-primary39compartments;panelC adaptive88-type grid
+Fig4,implementation_outputs/axis4/train_count_summary.csv;implementation_outputs/axis4/recommendations.csv,Donor generalization; split rows also in same directory
+Fig5,original_axis5/integration_summary.csv;original_axis5/reference_swap_significance.csv;implementation_outputs/wp6_full/integration_cross_method.csv,Integration methods and external reference comparisons
+Fig6,implementation_outputs/axis2/scorecard.csv;implementation_outputs/wp2/mvcc_anchor_sensitivity.csv;implementation_outputs/axis2_delorey/scorecard.csv;implementation_outputs/wp2_delorey/mvcc_anchor_sensitivity.csv,Cross-axis recommendation summary; missing coverage is not an independent pass
+Fig7,biological_context/matched_method/outputs/method_agreement.csv,Matched200-cell control; fullinput and5scorevectors in same directory; tree labels are proxies
+S1_Fig,implementation_outputs/wp2/mvcc_full_curves.csv,MVCC anchor sensitivity
+S2_Fig,implementation_outputs/wp3_axis2/rss_weight_sweep.csv,RSS weight simplex
+S3_Fig,implementation_outputs/wp3_axis2/rss_empirical_null.csv,RSS null distribution summary
+S4_Fig,implementation_outputs/wp4/reliability_gate_grid.csv,Rare-cell gate threshold grid
+S5_Fig,implementation_outputs/wp10_axis2/topk_scan.csv,Top-k sensitivity
+S6_Fig,implementation_outputs/wp12/normalization_ablation.csv,Axis2 kidney normalization ablation only
+S7_Fig,implementation_outputs/wp14/null_calibration.csv;implementation_outputs/wp14/scorecard.csv,Third-null calibration
+Dataset_table,original_axis3/dataset_metadata_all.csv;original_axis5/dataset_metadata.csv;implementation_outputs/*/provenance.json,Also requires cohort provenance inventory; provenance may omit historical input identity
+Integration_methods_table,implementation_outputs/wp6_full/integration_cross_method.csv,Harmony/scVI/Scanorama per-cohort metrics
+Worked_edge_table,original_axis5/immune_edges_*.csv,Stored immune edge scores and ranks across integration variants
+Method_agreement_table,biological_context/matched_method/outputs/method_agreement.csv,Same matched200-cell numerical source as Fig7; historical WP1 retained separately
+Robustness_and_guidelines_tables,implementation_outputs;original_axis1;original_axis3;original_axis4;original_axis5,Interpretive criteria spanning analyses rather than independent numerical experiments
+Cohort_context_table,biological_context/inputs/axis3_primary_metrics.csv;biological_context/inputs/axis3_delorey_metrics.csv,Standalone biological_context script; six named human subsets

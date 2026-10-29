@@ -1,0 +1,142 @@
+[
+  {
+    "axis": "rare_cell_type_stress_test",
+    "round": "round2_round2",
+    "priority": "P1",
+    "title": "Single-null dependence could overstate or understate rare-cell failure",
+    "excerpt": "- Evidence of risk:\n  - Original loop used one null family only (cell permutation), which does not probe mapping-level artifacts.\n  - This made conclusions vulnerable to null-choice criticism.\n- Fix implemented:\n  - Added dual-null evaluation in `/Users/ihorkendiukhov/biodyn-work/subproject_38_rare_cell_type_stress_test/implementation/run_rare_cell_type_stress_test.py:691` with:\n    - cell-permuta"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round1",
+    "priority": "P1",
+    "title": "Stability values had no null calibration, so practical meaning was ambiguous",
+    "excerpt": "- Evidence:\n  - Original pipeline reported raw Jaccard/overlap only (`.../analyze_cell_count_subsampling_robustness.py:237-239`, `290-292`).\n- Why this matters:\n  - Very small absolute overlap can still be far above random in huge edge universes, and vice versa.\n- Fix implemented:\n  - Added random-overlap baseline (expected Jaccard under hypergeometric model), enrichment ratio, and overlap p-value"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round4_round4",
+    "priority": "P1",
+    "title": "Round-3 summary still mixed single-draw and ensemble interpretations",
+    "excerpt": "- Evidence:\n  - Prior-vs-random delta reporting in round-3 primarily referenced deterministic policy baselines.\n- Why this matters:\n  - This reintroduces single-draw dependence in interpretation.\n- Fix implemented:\n  - Prior-vs-random deltas are now computed against random-ensemble means in the round-4 summary pipeline.\n\n## Repair status\n- All round-4 findings above are fixed in code and rerun out"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round3_round3",
+    "priority": "P1",
+    "title": "Round-2 biological-support separation lacked random-ensemble confidence bounds",
+    "excerpt": "- Evidence:\n  - Round-2 high-cell support comparison used one random draw.\n- Why this matters:\n  - Even when random support appears near zero, uncertainty should be quantified across random draws.\n- Fix implemented:\n  - Added random-ensemble high-cell support distribution output:\n    - `/Users/ihorkendiukhov/biodyn-work/subproject_38_cell_count_subsampling_robustness/implementation/outputs_adversa"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round1",
+    "priority": "P1",
+    "title": "Reference stability relied on a single anchor seed, creating anchor fragility",
+    "excerpt": "- Evidence:\n  - Hard-coded `REFERENCE_SEED = 1` (`.../analyze_cell_count_subsampling_robustness.py:39`) and only that seed is used for reference curves (`...:221-224`).\n- Why this matters:\n  - Any idiosyncrasy in one 3000-cell run directly propagates into all MVCC estimates and conclusions.\n- Fix implemented:\n  - Multi-anchor evaluation now uses all available 3000-cell seeds per tier and reports d"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round3_round3",
+    "priority": "P1",
+    "title": "Round-2 lacked uncertainty-calibrated statistical tests for prior-vs-random deltas",
+    "excerpt": "- Evidence:\n  - Round-2 reported deterministic deltas (`prior_vs_random_control_comparison.csv`) but no empirical null p-values.\n- Why this matters:\n  - Without a null distribution, it is unclear whether observed deltas exceed random-control variability.\n- Fix implemented:\n  - Added empirical p-values and BH q-values for prior-vs-random tests in round-3.\n  - New output:\n    - `/Users/ihorkendiukho"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round3_round3",
+    "priority": "P0",
+    "title": "Round-2 prior-vs-random conclusion depended on a single random draw and was therefore outlier-fragile",
+    "excerpt": "- Evidence:\n  - Round-2 random controls were generated from one deterministic sample (`RANDOM_POLICY_SEED = 20260218`) and treated as the random baseline.\n  - Single-draw random baseline reported low top-1000 reference Jaccard (e.g., `random_source` 200-cell values around `0.378-0.385`).\n  - Round-3 multi-draw ensemble (12 draws) shows much higher random baseline mean: `random_source` 200-cell Jac"
+  },
+  {
+    "axis": "cluster_resolution_sensitivity",
+    "round": "round1",
+    "priority": "P0",
+    "title": "Robustness sweep used RSS-only recommendations, inconsistent with primary dual-null policy",
+    "excerpt": "- **Issue:** The previous robustness grid (`top_genes` x `global_weight`) assigned recommendations from RSS thresholds only, while primary conclusions used dual-null calibration.\n- **Why critical:** This creates policy inconsistency: sweep outputs suggested mixed `fine/hybrid/coarse` even when the project\u2019s decision rule had moved to null-calibrated conservatism.\n- **Fix implemented:** Added dual-"
+  },
+  {
+    "axis": "rare_cell_type_stress_test",
+    "round": "round2_round2",
+    "priority": "P1",
+    "title": "Original data universe lacked out-of-sample stress testing",
+    "excerpt": "- Evidence of risk:\n  - Prior loop used only kidney/lung/immune processed datasets.\n- Fix implemented:\n  - Added external lung dataset support in `/Users/ihorkendiukhov/biodyn-work/subproject_38_rare_cell_type_stress_test/implementation/run_rare_cell_type_stress_test.py:45`.\n  - External cohort now included in default run unless explicitly excluded.\n- Validation after fix:\n  - External lung contri"
+  },
+  {
+    "axis": "cluster_resolution_sensitivity",
+    "round": "round1",
+    "priority": "P1",
+    "title": "Baseline null calibration p-value resolution was coarse",
+    "excerpt": "- **Issue:** Prior baseline null used 25 permutations (minimum p-step 0.0385).\n- **Risk:** Borderline effects could flip under finer resolution.\n- **Fix implemented:** Raised baseline defaults to 49 permutations for both null families.\n- **Code location:** `/Users/ihorkendiukhov/biodyn-work/subproject_38_cluster_resolution_sensitivity/implementation/run_resolution_sensitivity.py:1446`.\n- **Observe"
+  },
+  {
+    "axis": "rare_cell_type_stress_test",
+    "round": "round2_round2",
+    "priority": "P1",
+    "title": "Cross-dataset comparability was vulnerable to panel-construction confounding",
+    "excerpt": "- Evidence of risk:\n  - Adaptive panels are dataset-specific by design; global pooled claims can be criticized as panel artifacts.\n- Fix implemented:\n  - Added shared-panel sensitivity analysis:\n    - shared gene intersection and fixed edge panel export at `/Users/ihorkendiukhov/biodyn-work/subproject_38_rare_cell_type_stress_test/implementation/run_rare_cell_type_stress_test.py:1213`\n    - per-da"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round1",
+    "priority": "P1",
+    "title": "Biological conclusions were drawn from unconstrained policy only",
+    "excerpt": "- Evidence:\n  - Manuscript conclusions about emergent-edge plausibility were based on full-HVG unconstrained results (`.../paper.md:131-159`).\n- Why this matters:\n  - This can conflate a policy choice with a biological impossibility claim.\n- Fix implemented:\n  - Ran new constrained-policy experiments from attention matrices (TF-source and TF-source+target) across all 22 runs.\n  - Cached generated "
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round4_round4",
+    "priority": "P0",
+    "title": "Random-control null still leaked cross-run structure in round-3",
+    "excerpt": "- Evidence:\n  - Round-3 sampled one random source/target set per draw from a global shared-gene pool and reused it across all runs in that draw (`sample_random_constraint_sets` -> `build_random_ensemble_policy_cache` in the round-3 implementation).\n  - This preserved source/target identity across cell counts and seeds, which can inflate random-policy overlap by construction.\n- Why this is critical"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round2_round2",
+    "priority": "P1",
+    "title": "Overlap significance lacked multiplicity control in round-1",
+    "excerpt": "- Evidence:\n  - Round-1 computed `p_overlap_geq` for many pairwise tests but did not apply FDR correction (`.../adversarial_repair_pipeline.py:439`, `...:522`; no q-value stage).\n- Why this matters:\n  - Large test volume can exaggerate significance interpretation if unadjusted p-values are used.\n- Fix implemented:\n  - Added Benjamini-Hochberg q-values globally and per policy-top_k stratum.\n  - New"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round1",
+    "priority": "P0",
+    "title": "Cross-cell comparisons were confounded by gene-universe drift",
+    "excerpt": "- Evidence:\n  - Edge rankings were loaded per run (`.../analyze_cell_count_subsampling_robustness.py:149`) and compared directly (`...:225-239`) without harmonizing the gene universe between runs.\n  - Emergence classes were built from raw sets across counts (`...:465-477`) with no intersection-universe correction.\n- Why this is critical:\n  - If gene sets differ by cell-count run, an edge can be \u201cu"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round2_round2",
+    "priority": "P0",
+    "title": "Round-1 constrained-policy gains were not separated from search-space-size effects",
+    "excerpt": "- Evidence:\n  - Round-1 policy set only included `unconstrained`, `tf_source`, and `tf_source_target` (`.../adversarial_repair_pipeline.py:51-54`).\n  - No size-matched random-source/target control policies were run, so improved stability could still be caused by candidate-space shrinkage alone.\n- Why this is critical:\n  - Without a random control at matched source/target cardinality, \u201cbiological p"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round2_round2",
+    "priority": "P1",
+    "title": "Emergence conclusions were still trajectory-fragile in round-1",
+    "excerpt": "- Evidence:\n  - Round-1 emergence computation is hard-coded to seed-1 triplets (`RunKey(tier, 200, 1)`, `RunKey(tier, 1000, 1)`, `RunKey(tier, 3000, 1)`; `.../adversarial_repair_pipeline.py:622-624`).\n- Why this matters:\n  - High-cell-only and persistence classes can vary strongly by seed pairing; a single trajectory is not robust evidence.\n- Fix implemented:\n  - Replaced single-path emergence wit"
+  },
+  {
+    "axis": "cell_count_subsampling_robustness",
+    "round": "round4_round4",
+    "priority": "P1",
+    "title": "Round-3 Monte Carlo depth was too small for stable empirical claims",
+    "excerpt": "- Evidence:\n  - Round-3 used 12 draws, yielding coarse minimum empirical p-value (`1/(12+1)=0.0769`).\n- Why this matters:\n  - Important effects can remain unresolved purely due low null resolution.\n- Fix implemented:\n  - Increased random-control ensemble depth to 64 draws (`1/(64+1)=0.0154` minimum p-value).\n  - New empirical tests in `/Users/ihorkendiukhov/biodyn-work/subproject_38_cell_count_sub"
+  },
+  {
+    "axis": "cluster_resolution_sensitivity",
+    "round": "round1",
+    "priority": "P0",
+    "title": "Initial robustness null-permutation count made significance passing mathematically impossible",
+    "excerpt": "- **Issue:** The first implementation used `robust_null_permutations=8`, but empirical p-value with +1 correction has floor `1/(n+1)=1/9=0.111`, so a `<=0.05` gate could never pass.\n- **Why critical:** This would force systematic false-fail in robustness null checks.\n- **Fix implemented:**\n  - raised robustness null defaults to 25 per family;\n  - added explicit permutation-count validation to ensu"
+  },
+  {
+    "axis": "rare_cell_type_stress_test",
+    "round": "round2_round2",
+    "priority": "P2",
+    "title": "Minimum-size guideline fitting could produce non-interpretable extrapolations",
+    "excerpt": "- Evidence of risk:\n  - Unbounded log-linear extrapolation previously produced implausible values in some scenarios.\n- Fix implemented:\n  - Added bounded estimation status and empirical fallback in:\n    - `/Users/ihorkendiukhov/biodyn-work/subproject_38_rare_cell_type_stress_test/implementation/run_rare_cell_type_stress_test.py:481`\n    - `/Users/ihorkendiukhov/biodyn-work/subproject_38_rare_cell_"
+  }
+]

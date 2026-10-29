@@ -1,0 +1,42 @@
+[
+  {
+    "implementation": "PearsonScorer",
+    "input_sha256": "7508b88a1a01bdbe0750a5f396d1d43b265cf69e5d58729a977c5831ce6f2eab",
+    "label": "Absolute Pearson correlation",
+    "method": "pearson",
+    "n_cells": 200,
+    "seconds": 0.012107749999813677
+  },
+  {
+    "implementation": "MutualInfoScorer",
+    "input_sha256": "7508b88a1a01bdbe0750a5f396d1d43b265cf69e5d58729a977c5831ce6f2eab",
+    "label": "kNN mutual information",
+    "method": "mutual_info",
+    "n_cells": 200,
+    "seconds": 5.029627542000526
+  },
+  {
+    "implementation": "GRNBoost2Scorer",
+    "input_sha256": "7508b88a1a01bdbe0750a5f396d1d43b265cf69e5d58729a977c5831ce6f2eab",
+    "label": "sklearn gradient-boosting proxy",
+    "method": "grnboost2",
+    "n_cells": 200,
+    "seconds": 12.243820874999983
+  },
+  {
+    "implementation": "GENIE3Scorer",
+    "input_sha256": "7508b88a1a01bdbe0750a5f396d1d43b265cf69e5d58729a977c5831ce6f2eab",
+    "label": "sklearn random-forest proxy",
+    "method": "genie3",
+    "n_cells": 200,
+    "seconds": 24.808719667000332
+  },
+  {
+    "implementation": "ScGPTAttentionRealScorer",
+    "input_sha256": "7508b88a1a01bdbe0750a5f396d1d43b265cf69e5d58729a977c5831ce6f2eab",
+    "label": "Frozen whole-human continuous-input attention extraction",
+    "method": "scgpt_attention",
+    "n_cells": 200,
+    "seconds": 14.234829916000308
+  }
+]
